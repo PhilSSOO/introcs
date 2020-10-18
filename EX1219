@@ -1,0 +1,14 @@
+import edu.princeton.cs.algs4.StdRandom;
+//        1.2.19 Write a program that takes two integer
+//        command-line arguments a and b
+//        and prints a random integer between a and b, inclusive.
+public class EX1219 {
+    public static void main(String[] args) {
+        int a = 3;
+        int b = 5;
+        int rr;
+
+        rr = StdRandom.uniform(b-a+1) + a;
+        System.out.println("rr " + rr);
+    }
+}
