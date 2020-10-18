@@ -1,0 +1,44 @@
+//1.3.21 Modify Binary to get a program Kary that takes
+// two integer
+// commandline arguments i and k and converts i to base k.
+// Assume that i is an integer in Java’s
+//        long data type and that k is an integer
+//        between 2 and 16.
+//        For bases greater than 10,
+//        use the letters A through F to represent the 11th
+//        through 16th digits, respectively
+
+public class EX1321 {
+    // 2 <= k <= 16
+    // use a decimal num 27 as an example, how to get 27 printed???
+    public static void kary(long n, int k) {
+        int power = 1;
+        while (power <= n/k)
+            power *= k;
+    // Now power is the largest power of k that is <= n.
+        while (power > 0)
+        { // Cast out powers of k in decreasing order.
+            if (n < power) { System.out.print(0); }
+            else {
+                int digit = (int) n / power;
+                if (digit > 9)
+                {
+                    char charDigit = (char)('a' + (digit - 10));
+                    System.out.print(charDigit);
+                }
+                else
+                    System.out.print(digit);
+
+                n -= digit*power;
+            }
+            power /= k;
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        long n = 123;
+        int k = 16;
+        kary(n, k);
+    }
+}
