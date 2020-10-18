@@ -1,0 +1,34 @@
+//1.3.22 Write a code fragment that puts the binary representation
+// of a positive
+//        integer n into a String variable s.
+//        Solution. Java has a built-in method Integer.toBinaryString(n) for this job,
+//        but the point of the exercise is to see how such a method might be implemented.
+//        Working from program 1.3.7, we get the solution
+//        String s = "";
+//        int power = 1;
+//        while (power <= n/2) power *= 2;
+//        while (power > 0)
+//        {
+//        if (n < power) { s += 0; }
+//        else { s += 1; n -= power; }
+//        power /= 2;
+//        }
+//        A simpler option is to work from right to left:
+//        String s = "";
+//        for (int i = n; i > 0; i /= 2)
+//        s = (i % 2) + s;
+//        Both of these methods are worthy of careful study.
+public class EX1322 {
+    // how we conv 27 to base 10
+    public static void aa(int n, int k) {
+        String s = "";
+        for (int i = n; i > 0; i /= k) {
+            s = (i % k) + s;
+        }
+        System.out.println(s);
+    }
+
+    public static void main(String[] args) {
+        aa(27,10);
+    }
+}
