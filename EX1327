@@ -1,0 +1,27 @@
+//1.3.27 Modify Factors to print just one copy each of the
+// prime divisors
+
+public class EX1327 {
+    // p73 txtbk
+    public static void main(String[] args)
+    { // Print the prime factorization of n.
+        long n = 3757208;//Long.parseLong(args[0]);
+        // factor unique, randomly init to 1 (can also init to 0,
+        // although 0 is mathe incorr)
+        long facUnq = 1;
+        for (long factor = 2; factor <= n/factor; factor++)
+        { // Test potential factor.
+            while (n % factor == 0)
+            { // Cast out and print factor.
+                n /= factor;
+                if (facUnq != factor) {
+                    // updt facUnq
+                    facUnq = factor;
+                    System.out.print(factor + " ");
+                }
+            } // Any factor of n must be greater than factor.
+        }
+        if (n > 1) System.out.print(n);
+        System.out.println();
+    }
+}
