@@ -1,0 +1,34 @@
+//1.3.36 Counting primes. Write a program PrimeCounter that takes
+// an integer
+//        command-line argument n and finds the number of primes
+//        less than or equal to n.
+//        Use it to print out the number of primes less than or
+//        equal to 10 million. Note : If
+//        you are not careful, your program may not finish in a
+//        reasonable amount of time!
+
+public class EX1336 {
+    public static boolean isPrime(int n) {
+        // dont need to iter thru n (ex, n = 7, chk frm 2 till 3
+        for (int i = 2; i <= n/i; i++) {
+            if (n%i == 0)
+                return false;
+        }
+        return true;
+    }
+
+    public static int primeCounter(int n) {
+        int cnt = 0;
+        for (int i = 2; i <= n; i++) {
+            if (isPrime(i))
+                cnt++;
+        }
+        return cnt;
+    }
+
+    public static void main(String[] args) {
+        int n = 10000000;
+        int cnt = primeCounter(n);
+        System.out.println(cnt);
+    }
+}
