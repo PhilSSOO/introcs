@@ -1,0 +1,20 @@
+//1.3.32 Write a program PowersOfK that takes an integer
+// command-line argument
+//        k and prints all the positive powers of k in the
+//        Java long data type. Note : The constant
+//        Long.MAX_VALUE is the value of the largest integer in long.
+
+public class EX1332 {
+    public static void PowersOfK(long k) {
+        long powers = k;
+        while (powers < Long.MAX_VALUE && powers > 0) { // must have powers > 0, otherwise some negatv nums got printed
+            System.out.print(powers + " "); 
+            powers *= k;
+        }
+    }
+
+    public static void main(String[] args) {
+        long k = 9;
+        PowersOfK(k);
+    }
+}
