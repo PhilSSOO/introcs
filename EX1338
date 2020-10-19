@@ -1,0 +1,113 @@
+//1.3.38 Exponential function. Assume that x is a positive variable
+// of type double.
+//        Write a code fragment that uses the Taylor series expansion
+//        to set the value of sum
+//        to e x = 1 + x + x2/2! + x3/3! + . . . .
+//        Solution. The purpose of this exercise is to get you to
+//        think about how a library
+//        function like Math.exp() might be implemented in terms of
+//        elementary operators.
+//        Try solving it, then compare your solution with the one
+//        developed here.
+//        We start by considering the problem of computing one term.
+//        Suppose that x
+//        and term are variables of type double and n is a variable
+//        of type int. The following code fragment sets term to
+//        x n / n ! using the direct method of having one loop
+//        for the numerator and another loop for the denominator,
+//        then dividing the results:
+//        double num = 1.0, den = 1.0;
+//        for (int i = 1; i <= n; i++) num *= x;
+//        for (int i = 1; i <= n; i++) den *= i;
+//        double term = num/den;
+//        A better approach is to use just a single for loop:
+//        double term = 1.0;
+//        for (i = 1; i <= n; i++) term *= x/i;
+//        Besides being more compact and elegant, the latter solution
+//        is preferable because
+//        it avoids inaccuracies caused by computing with huge numbers.
+//        For example, the
+//        two-loop approach breaks down for values like x = 10 and
+//        n = 100 because 100! is
+//        too large to represent as a double.
+//        To compute ex , we nest this for loop within another for loop:
+//        double term = 1.0;
+//        double sum = 0.0;
+//        for (int n = 1; sum != sum + term; n++)
+//        {
+//        sum += term;
+//        term = 1.0;
+//        for (int i = 1; i <= n; i++) term *= x/i;
+//        }
+//        The number of times the loop iterates depends on the
+//        relative values of the next
+//        term and the accumulated sum. Once the value of the sum
+//        stops changing, we leave
+//        the loop. (This strategy is more efficient than using the
+//        loop-continuation condition (term > 0) because it avoids
+//        a significant number of iterations that do not
+//        change the value of the sum.) This code is effective,
+//        but it is inefficient because the
+//        inner for loop recomputes all the values it computed on
+//        the previous iteration of
+//        the outer for loop. Instead, we can make use of the term
+//        that was added in on the
+//        previous loop iteration and solve the problem with a single
+//        for loop:
+//        double term = 1.0;
+//        double sum = 0.0;
+//        for (int n = 1; sum != sum + term; n++)
+//        {
+//        sum += term;
+//        term *= x/n;
+//        }
+
+public class EX1338 {
+
+    public static void app(double x) {//}, int n) {
+
+//        double x, num = 1.0, den = 1.0;
+//        for (int i = 1; i <= n; i++) num *= x;
+//        for (int i = 1; i <= n; i++) den *= i;
+//        double term = num/den;
+//        double term = 1.0;
+//        for (i = 1; i <= n; i++) term *= x/i;
+
+        //        To compute ex , we nest this for loop within another for loop:
+//        double term = 1.0;
+//        double sum = 0.0;
+//        for (int n = 1; sum != sum + term; n++)
+//        {
+//            sum += term;
+//            term = 1.0;
+//            for (int i = 1; i <= n; i++) term *= x/i;
+//        }
+
+
+     //   Instead, we can make use of the term
+//        that was added in on the
+//        previous loop iteration and solve the problem with a single
+//        for loop:
+
+      //  e x = 1 + x + x2/2! + x3/3! + . . .
+
+//        double x = 1.0;
+        double term = 1.0;
+        double sum = 0.0;
+        for (int i = 1; sum != sum + term; i++)
+        {
+            sum += term;
+            term *= x/i;
+            System.out.println(i);
+        }
+        System.out.println(sum);
+    }
+
+    public static void main(String[] args) {
+      //  int n = 2;
+        double x = 1.0;
+        app(x);
+
+
+    }
+}
