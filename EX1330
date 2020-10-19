@@ -1,0 +1,38 @@
+//1.3.30 Write a program GreatestCommonDivisor that finds the
+// greatest common
+//        divisor (gcd) of two integers using Euclid’s algorithm,
+//        which is an iterative computation based on the
+//        following observation: if x is greater than y, then if
+//        y divides x,
+//        the gcd of x and y is y; otherwise, the gcd of x and y
+//        is the same as the gcd of x % y
+//        and y.
+
+public class EX1330 {
+    public static int gcd(int x, int y) {
+        while (true) {
+            // mk sure x > y
+            if (x < y) {
+                int tmp = x;
+                x = y;
+                y = tmp;
+            }
+            // if y divides x, the gcd of x and y is y
+            if (x % y == 0)
+                return y;
+                // otherwise, the gcd of x and y is the same as
+                // the gcd of x % y and y
+            else
+                x = x % y;
+        }
+    }
+
+
+
+    public static void main(String[] args)
+    {
+        int x = 5;//Integer.parseInt(args[0]);
+        int y = 2;//Integer.parseInt(args[1]);
+        System.out.println(ggccddRecur(x, y));
+    }
+}
