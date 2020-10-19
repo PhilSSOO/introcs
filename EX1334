@@ -30,7 +30,7 @@ public class EX1334 {
                 for (long k = i+1; k < n; k++) {// k = 0 leads to following duplicate; k = i+1 to avoid duplicate
                     for (long m = k+1; m < n; m++) { //
                         k3m3 = k*k*k + m*m*m;
-                        if (i3j3 == k3m3 && i != k && i != m) {
+                        if (i3j3 == k3m3) {
                             System.out.print("a " + i + ", b " + j + ", c " + k
                                     + ", d " + m + "\n");
                                     // if k = 0, following got printed. How to avoid dulplicate???
