@@ -1,0 +1,32 @@
+//1.4.6 Write a code fragment that prints the contents of a
+// two-dimensional boolean array, using * to represent true and
+// a space to represent false. Include row
+//        and column indices
+public class EX146 {
+    public static void twoD(boolean[][] twoDarr) {
+        int row = twoDarr.length;
+        int col = twoDarr[0].length;
+
+        for (int i = 0; i < col; i++) {
+            // pr column nums
+            System.out.print("\t" + i);
+        }
+        System.out.println();
+        for (int i = 0; i < row; i++) {
+            System.out.print(i); // pr row num
+            for (int j = 0; j < col; j++) {
+                if(twoDarr[i][j] == true)
+                    System.out.print("\t*");
+                else
+                    System.out.print("\t");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        boolean[][] twoDarr = new boolean[][]{{false, true},{true, true},
+                {true, false}};
+        twoD(twoDarr);
+    }
+}
