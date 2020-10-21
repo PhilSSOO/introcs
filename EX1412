@@ -1,0 +1,16 @@
+//1.4.12 Write a program DiscreteDistribution that takes a variable
+// number of
+//        integer command-line arguments and prints the integer i
+//        with probability proportional to the ith command-line
+//        argument
+public class EX1412 {
+    public static void main(String[] args) {
+        for (String s: args) {
+            int sToInt = Integer.parseInt(s);
+            for (int i = 0; i < sToInt; i++) {
+                System.out.print(s + " ");
+            }
+            System.out.println();
+        }
+    }
+}
