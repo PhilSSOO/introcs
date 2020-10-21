@@ -1,0 +1,38 @@
+//1.4.10 Write a program Deal that takes an integer command-line
+// argument n and
+//        prints n poker hands (five cards each) from a shuffled
+//        deck, separated by blank lines
+public class EX1410 {
+    // assum a deck of 52 cards (King and queen not includ)
+    // int N = 5
+    public static void deal(int n, int N) {
+        for (int ii = 0; ii < n; ii++) {
+            for (int i = 0; i < N; i++) {
+                int rr = StdRandom.uniform(1, 52); // BUG: may get a same card multiple tms
+                // diamonds (♦), clubs (♣), hearts (♥) and spades
+                if (rr/13 == 0) {
+                    System.out.print("diamond " + rr%13 + ", ");
+                }
+                else if (rr/13 == 1) {
+                    System.out.print("club " + rr%13 + ", ");
+                }
+                else if (rr/13 == 2) {
+                    System.out.print("heart " + rr%13 + ", ");
+
+                }
+                else { // (rr/13 == 3) 
+                    System.out.print("spade " + rr%13 + ", ");
+
+                }
+            }
+            System.out.println();
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        int n = 7; //Integer.parseInt(args[0]);
+        int N = 5;
+        deal(n, N);
+    }
+}
