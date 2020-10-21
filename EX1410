@@ -6,23 +6,33 @@ public class EX1410 {
     // assum a deck of 52 cards (King and queen not includ)
     // int N = 5
     public static void deal(int n, int N) {
+        boolean[] barr;
+        int rr;
         for (int ii = 0; ii < n; ii++) {
+            barr = new boolean[53];// waste barr[0]
             for (int i = 0; i < N; i++) {
-                int rr = StdRandom.uniform(1, 52); // BUG: may get a same card multiple tms
+                rr = StdRandom.uniform(1, 52);
+                if (barr[rr] == true) {// card already chosen once
+                    i--; // so we do ith one more tm
+                    continue;
+                }
+                barr[rr] = true;
                 // diamonds (♦), clubs (♣), hearts (♥) and spades
                 if (rr/13 == 0) {
+                    // diamonds
                     System.out.print("diamond " + rr%13 + ", ");
                 }
                 else if (rr/13 == 1) {
+                    // clubs
                     System.out.print("club " + rr%13 + ", ");
                 }
                 else if (rr/13 == 2) {
+                    // hearts
                     System.out.print("heart " + rr%13 + ", ");
-
                 }
-                else { // (rr/13 == 3) 
+                else { // (rr/13 == 3) {
+                    // spades
                     System.out.print("spade " + rr%13 + ", ");
-
                 }
             }
             System.out.println();
