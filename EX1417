@@ -1,0 +1,28 @@
+//1.4.17 Modify the spreadsheet code fragment in the text to compute
+// a weighted
+//        average of the rows, where the weights of each exam score
+//        are in a one-dimensional
+//        array weights[]. For example, to assign the last of the
+//        three exams in our example
+//        to be twice the weight of the first two, you would use
+//        double[] weights = { 0.25, 0.25, 0.50 };
+
+public class EX1417 {
+    public static void main(String[] args) {
+          //  a = {{1, 2, 3}, {4, 5, 6},{7, 8, 9}};
+          // purposely use {1, 2, 3,0} ....
+        double[][] a = {{1, 2, 3,0}, {4, 5, 6,0},{7, 8, 9,0}};
+        double[] weights = { 0.25, 0.25, 0.50};
+        
+        int m = a.length;
+        int n = a[0].length;
+        //Compute row averages
+        for (int i = 0; i < m; i++)
+        { // Compute average for row i
+            double sum = 0.0;
+            for (int j = 0; j < n-1; j++)
+                sum += a[i][j]*weights[j];
+            a[i][n-1] = sum / (n-1);
+        }
+    }
+}
