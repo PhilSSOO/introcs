@@ -1,0 +1,32 @@
+//1.4.19 Write a program that multiplies two square boolean matrices,
+// using the or
+//        operation instead of + and the and operation instead of *.
+public class EX1419 {
+    public static void multiplies(boolean[][] b1, boolean[][] b2) {
+        int n = b1.length;
+        boolean[][] bb = new boolean[n][n];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                boolean sum = false;
+                for (int k = 0; k < n; k++) {
+                    // or for +,  and for *
+                    sum = sum | (b1[i][k]&b2[k][j]);
+                }
+                bb[i][j] = sum;
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                System.out.println(bb[i][j]);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        boolean[][] b1 = new boolean[][]{{true, false}, {true, false}};
+        boolean[][] b2 = new boolean[][]{{true, false}, {true, false}};
+        multiplies(b1,b2);
+    }
+}
