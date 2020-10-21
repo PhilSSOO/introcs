@@ -4,7 +4,7 @@
 //        average lengths of escape paths and dead-end paths.
 
 public class EX1420 {
-    public static void main(String[] args) {
+        public static void main(String[] args) {
         // Do trials random self-avoiding
         // walks in an n-by-n lattice.
         int n = 25; // Integer.parseInt(args[0]);
@@ -12,12 +12,12 @@ public class EX1420 {
         int deadEnds = 0;
         boolean dead = false;
 
-        int totalEscape = 0;
-        int totalDeadend = 0;
+        int sumPathLenEscape = 0;
+        int sumPathLenDeadend = 0;
 
         for (int t = 0; t < trials; t++) {
             boolean[][] a = new boolean[n][n];
-            // start frm centr
+            // startg frm centr
             int x = n/2, y = n/2;
             int count = 0;
             while (x > 0 && x < n-1 && y > 0 && y < n-1)
@@ -27,7 +27,7 @@ public class EX1420 {
                 if (a[x-1][y] && a[x+1][y] && a[x][y-1] && a[x][y+1])
                 {
                     deadEnds++;
-                    totalDeadend += count; // ???
+                    sumPathLenDeadend += count;
                     dead = true;
                     break;
                 }
@@ -42,13 +42,13 @@ public class EX1420 {
                 dead = false; // reset dead to start a new trial
             }
             else {
-                totalEscape += count;
+                sumPathLenEscape += count;
                 dead = false;
             }
         }
 
-        System.out.println(100*deadEnds/trials + "% dead ends");
-        System.out.println((double)totalEscape/trials + " len esc path");
-        System.out.println((double)totalDeadend/trials + " len dead end path");
+        System.out.println(100.0*deadEnds/trials + "% dead ends");
+        System.out.println((double)sumPathLenEscape/trials + " len esc path");
+        System.out.println((double)sumPathLenDeadend/trials + " len dead end path");
     }
 }
