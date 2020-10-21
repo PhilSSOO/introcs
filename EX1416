@@ -1,0 +1,68 @@
+//1.4.16 Write a program that takes an integer command-line argument
+// n and creates an n-by-n boolean array a[][] such that a[i][j]
+// is true if i and j are relatively prime (have no common factors),
+// and false otherwise. Use your solution to
+//        exercise 1.4.6 to print the array. Hint: Use sieving.
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class EX1416 {
+    private static boolean haveCommFactors(int m,int n) {
+        int min = Math.min(m,n);
+        int max = Math.max(m,n);
+        // if someone divides the other, ret T
+        if (max%min == 0)
+            return true;
+
+        // find all factors of the larger int
+        List<Integer> list = new ArrayList<>();
+        int pp = 2;
+        while (pp <= max/pp) {
+            if (max%pp == 0)
+                list.add(pp++);
+            else
+                pp++;
+        }
+        // examine all factors of the larger int to see if any divides the smaller int
+        int ct = 0;
+        while (ct < list.size()) {
+            int ff = list.get(ct);
+            if (min%ff == 0)
+                return true;
+            ct++;
+        }
+        return false;
+    }
+
+    public static void print2Darr(int n) {
+       // boolean[][] twoDarr = new boolean[n+1][n+1];
+        for (int i = 0; i <= n; i++) {
+            if (i == 0) // reserve a space for row num column
+                System.out.print("");
+            else // pr column nums
+                System.out.print("\t" + i);
+        }
+        System.out.println();
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= n; j++) {
+                if (j == 0)
+                    System.out.print(i); // pr row num
+                else if(!haveCommFactors(i,j)) {
+                   // twoDarr[i][j]  = true;
+                    System.out.print("\tT");
+                }
+                else {
+                   // twoDarr[i][j]  = false;
+                    System.out.print("\tF");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        int n = 5;
+        print2Darr(n);
+    }
+}
