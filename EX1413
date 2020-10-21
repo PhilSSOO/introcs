@@ -1,0 +1,37 @@
+//1.4.13 Write code fragments to create a two-dimensional array b[][]
+// that is a
+//        copy of an existing two-dimensional array a[][], under
+//        each of the following assumptions:
+//        a. a[][] is square
+//        b. a[][] is rectangular
+//        c. a[][] may be ragged
+//        Your solution to b should work for a, and your solution to
+//        c should work for both b
+//        and a, and your code should get progressively more complicated.
+
+public class EX1413 {
+    public static void copy(int a[][]) {
+        int m = a.length;
+        int n = a[m-1].length;
+        int b[][] = new int[m][n];
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < a[i].length; j++) {
+                b[i][j] = a[i][j];
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                System.out.print("\t" + b[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+//        int m = 5;
+//        int n = 4;
+        int a[][] = {{7,8,9,11}, {7,8,9,11}, {7,8,9,11}};
+        copy(a);
+    }
+}
