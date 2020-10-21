@@ -1,0 +1,29 @@
+//1.4.15 Write a code fragment to transpose a square two-dimensional array in place
+//without creating a second array
+public class EX1415 {
+    private static void swap(int aa[][], int i, int j) {
+        int tm = aa[i][j];
+        aa[i][j] = aa[j][i];
+        aa[j][i]= tm;
+    }
+
+    public static void trans(int a[][]) {
+        for (int i = 0; i < a.length; i++) {
+            // ii < a[i].length/2 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            for (int ii = 0; ii < a[i].length/2; ii++) {
+                swap(a, i,ii);
+            }
+        }
+        for (int i = 0; i < a.length; i++) {
+            for (int ii = 0; ii < a.length; ii++) {
+                System.out.print(a[i][ii]);
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        int a[][] = {{1, 2, 3}, {4, 5, 6},{7, 8, 9}};
+        trans(a);
+    }
+}
