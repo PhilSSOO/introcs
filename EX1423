@@ -1,0 +1,51 @@
+//1.4.23 Longest plateau. Given an array of integers, find the length
+// and location
+//        of the longest contiguous sequence of equal values for which
+//        the values of the elements just before and just after
+//        this sequence are smaller.
+public class EX1423 {
+    public static boolean found = false;
+    public static void wrapp(int[] aa) {
+        // build an int[] of len 2 to store val + len
+        int[] plateau = new int[]{-1,-1};
+        longest(aa, plateau);
+    }
+
+    private static void longest(int[] aa, int[] plateau) {
+       for (int j = 2; j < aa.length; j++) {
+            if (aa[j] == aa[j-1] && aa[j-1] > aa[j-2]) {
+                plateau = findValAndLen(aa, plateau, j);
+                // either new plateau was found or not
+                if (found) {
+                    //update j to endIndex
+                    j += plateau[1];
+                    found = false;
+                }
+            }
+        }
+        System.out.println("plateau val " + plateau[0]);
+        System.out.println("plateau len " + plateau[1]);
+    }
+
+    private static int[] findValAndLen(int[] aa, int[] plateau,
+                                        int start) {
+        int val = aa[start];
+        int endIndex;
+        for (endIndex = start + 1; endIndex < aa.length; endIndex++) {
+            if (aa[endIndex] != val)
+                break;
+        }
+        // found a seq of equal vals. Need to chk if the item after is < val
+        if (aa[endIndex] < aa[endIndex-1] && endIndex-start + 1 > plateau[1]) {
+            found = true;
+            plateau = new int[]{val,endIndex-start+1};
+            return plateau;
+        }
+        return plateau;
+    }
+
+    public static void main(String[] args) {
+        int[] aa = new int[] {1,2,2,2,1,3,3,4,5,5,5,5,2,8};
+        wrapp(aa);
+    }
+}
