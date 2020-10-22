@@ -1,0 +1,45 @@
+//4.3.4 Write a filter Reverse that reads strings one at a time from
+// standard input
+//        and prints them to standard output in reverse order. Use either
+//        a stack or a queue.
+
+import edu.princeton.cs.algs4.StdIn;
+
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.Stack;
+
+public class EX434 {
+    public static void queue() {
+        Queue<String> q = new ArrayDeque<String>();
+        while (!StdIn.isEmpty()) {
+            String ss = StdIn.readString();
+            q.add(ss);
+        }
+
+        String[] sArr = new String[q.size()];
+        int i = 0;
+        while (!q.isEmpty()) {
+            sArr[i++] = q.remove();
+        }
+        for (int j = sArr.length-1; j >= 0; j--) {
+            System.out.print(sArr[j]);
+        }
+    }
+
+    public static void stack() {
+        Stack<String> stk = new Stack<>();
+        while (!StdIn.isEmpty()) {
+            String ss = StdIn.readString();
+            stk.push(ss);
+        }
+        //
+        while (!stk.isEmpty()) {
+            System.out.print(stk.pop());
+        }
+    }
+
+    public static void main(String[] args) {
+        queue();
+    }
+}
