@@ -1,0 +1,44 @@
+//4.3.5 Write a static method that reads floating-point numbers one at a
+// time from
+//        standard input and returns an array containing them, in the same
+//        order they appear
+//        on standard input. Hint : Use either a stack or a queue.
+
+import edu.princeton.cs.algs4.StdIn;
+
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.Stack;
+
+public class EX435 {
+    public static void queue() {
+        Queue<String> q = new ArrayDeque<String>();
+        while (!StdIn.isEmpty()) {
+            String ss = StdIn.readString();
+            q.add(ss);
+        }
+        while (!q.isEmpty()) {
+            System.out.print(q.remove());
+        }
+    }
+
+    public static void stack() {
+        Stack<String> stk = new Stack<>();
+        while (!StdIn.isEmpty()) {
+            String ss = StdIn.readString();
+            stk.push(ss);
+        }
+        String[] sArr = new String[stk.size()];
+        int i = 0;
+        while (!stk.isEmpty()) {
+            sArr[i++] = stk.pop();
+        }
+        for (int j = sArr.length-1; j >= 0; j--) {
+            System.out.print(sArr[j]);
+        }
+    }
+
+    public static void main(String[] args) {
+        queue();
+    }
+}
