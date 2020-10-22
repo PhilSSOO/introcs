@@ -10,7 +10,7 @@ public class EX1423 {
         int[] plateau = new int[]{-1,-1};
         longest(aa, plateau);
     }
-
+    // print plateau's val + len
     private static void longest(int[] aa, int[] plateau) {
        for (int j = 2; j < aa.length; j++) {
             if (aa[j] == aa[j-1] && aa[j-1] > aa[j-2]) {
@@ -26,9 +26,9 @@ public class EX1423 {
         System.out.println("plateau val " + plateau[0]);
         System.out.println("plateau len " + plateau[1]);
     }
-
+   
     private static int[] findValAndLen(int[] aa, int[] plateau,
-                                        int start) {
+                                        int start) {  // if a plateau was found, start is the plateau' 2nd item's index
         int val = aa[start];
         int endIndex;
         for (endIndex = start + 1; endIndex < aa.length; endIndex++) {
@@ -38,7 +38,8 @@ public class EX1423 {
         // found a seq of equal vals. Need to chk if the item after is < val
         if (aa[endIndex] < aa[endIndex-1] && endIndex-start + 1 > plateau[1]) {
             found = true;
-            plateau = new int[]{val,endIndex-start+1};
+            plateau[0] = endIndex-start+1;
+            plateau[1] = start-1;
             return plateau;
         }
         return plateau;
