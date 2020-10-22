@@ -1,0 +1,48 @@
+//1.4.22 Dice simulation. The following code computes the exact
+// probability distribution for the sum of two dice:
+//        int[] frequencies = new int[13];
+//        for (int i = 1; i <= 6; i++)
+//        for (int j = 1; j <= 6; j++)
+//        frequencies[i+j]++;
+//        double[] probabilities = new double[13];
+//        for (int k = 1; k <= 12; k++)
+//        probabilities[k] = frequencies[k] / 36.0;
+//        The value probabilities[k] is the probability that the
+//        dice sum to k. Run experiments that validate this
+//        calculation by simulating n dice throws, keeping track
+//        of
+//        the frequencies of occurrence of each value when you
+//        compute the sum of two
+//        uniformly random integers between 1 and 6. How large
+//        does n have to be before
+//        your empirical results match the exact results to three decimal places?
+
+import edu.princeton.cs.algs4.StdRandom;
+
+public class EX1422 {
+    public static void main(String[] args) {
+        // calc
+        int[] frequencies = new int[13];
+        for (int i = 1; i <= 6; i++)
+        for (int j = 1; j <= 6; j++)
+        frequencies[i+j]++;
+        double[] probabilities = new double[13];
+        for (int k = 1; k <= 12; k++)
+            probabilities[k] = frequencies[k] / 36.0;
+        // testing by throwing two dices
+        int[] frequenciesByThrow = new int[13];
+        double[] probabilitiesByThrow = new double[13];
+        int trials = 10000;
+        for (int i = 0; i < trials; i++) {
+            int r1 = StdRandom.uniform(6) +1;
+            int r2 = StdRandom.uniform(6) +1;
+            frequenciesByThrow[r1+r2]++;
+        }
+        for (int k = 1; k <= 12; k++) {
+            probabilitiesByThrow[k] = (double)frequenciesByThrow[k] /trials;
+        }
+        for (int i = 1; i <= 12; i++) {
+            System.out.println("diff Probabilities for " + i + " " + (probabilitiesByThrow[i] - probabilities[i]));
+        }
+    }
+}
