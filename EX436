@@ -1,0 +1,38 @@
+//4.3.6 Write a stack client Parentheses that reads a string of parentheses,
+// square
+//        brackets, and curly braces from standard input and uses a stack to
+//        determine
+//        whether they are properly balanced. For example, your program
+//        should print true
+//        for [()]{}{[()()]()} and false for [(]).
+
+import edu.princeton.cs.algs4.StdIn;
+import java.util.Stack;
+
+public class EX436 {
+    public static void Parentheses() {
+        Stack<Character> stk = new Stack<>();
+      //  while (!StdIn.isEmpty()) {
+        String ss = StdIn.readString();
+        for (int i = 0; i < ss.length(); i++) {
+            char c = ss.charAt(i);
+            if (c == '{' || c == '[' || c == '(')
+                stk.push(c);
+            else if (c == '}' && stk.pop() == '{');
+            else if (c == ']' && stk.pop() == '[');
+            else if (c == ')' && stk.pop() == '(');
+            else {
+                System.out.println("not balanced");
+                return;
+            }
+        }
+        if (stk.isEmpty())
+            System.out.println("balanced");
+        else
+            System.out.println("not balanced");
+    }
+
+    public static void main(String[] args) {
+        Parentheses();
+    }
+}
