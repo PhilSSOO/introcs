@@ -1,0 +1,45 @@
+//4.3.10 Give the contents and length of the array for
+// ResizingArrayStackOfStrings with this input:
+//        it was - the best - of times - - - it was - the - -
+public class EX4310 {
+    private String[] items = new String[1];
+    private int n = 0;
+    public boolean isEmpty()
+    { return (n == 0); }
+    private void resize(int capacity)
+    { // Move stack to a new array of given capacity.
+        String[] temp = new String[capacity];
+        for (int i = 0; i < n; i++)
+            temp[i] = items[i];
+        items = temp;
+    }
+    public void push(String item)
+    { // Insert item onto stack.
+        if (n == items.length) resize(2*items.length);
+        items[n++] = item;
+    }
+    public String pop()
+    { // Remove and return most recently inserted item.
+        String item = items[--n];
+        items[n] = null; // Avoid loitering (see text).
+        if (n > 0 && n == items.length/4) resize(items.length/2);
+        return item;
+    }
+
+    public static void main(String[] args) {
+        EX4310 rs = new EX4310();
+        while (!StdIn.isEmpty())
+        {
+            String ss = StdIn.readString();
+            if (!ss.equals("-"))
+                rs.push(ss);
+            else
+                StdOut.print(rs.pop() + " ");
+        }
+
+        System.out.println(rs.items.length);
+        for (int i = 0; i < rs.items.length; i++) {
+            System.out.print(rs.items[i] + " ");
+        }
+    }
+}
