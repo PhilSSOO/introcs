@@ -1,0 +1,95 @@
+//4.3.11 Add a method size() to both Stack (program 4.3.4) and Queue
+// (program
+//        4.3.6) that returns the number of items in the collection.
+//        Hint : Make sure that your
+//        method takes constant time by maintaining an instance variable
+//        n that you initialize to 0, increment in push() and enqueue(),
+//        decrement in pop() and dequeue(),
+//        and return in size().
+
+public class EX4311 {
+    public static void main(String[] args)
+    {
+//        Stack<String> stack = new Stack<String>();
+//        stack.push("a");
+//        stack.push("a1");
+//        int sz = stack.size();
+//        System.out.print(sz);
+        Queue<String> que = new Queue<String>();
+        que.enqueue("a");
+        que.enqueue("a1");
+        que.dequeue();
+        int sz = que.size();
+        System.out.print(sz);
+    }
+}
+
+// Program 4.3.4
+class Stack<Item>
+{
+    private Node first;
+    private int n;
+    private class Node
+    {
+        Item item;
+        Node next;
+    }
+    public boolean isEmpty()
+    { return (first == null); }
+    public void push(Item item)
+    { // Insert item onto stack.
+        Node oldFirst = first;
+        first = new Node();
+        first.item = item;
+        first.next = oldFirst;
+        n++;
+    }
+    public Item pop()
+    { // Remove and return most recently inserted item.
+        Item item = first.item;
+        first = first.next;
+        n--;
+        return item;
+    }
+    public int size()
+    { //
+        return n;
+    }
+}
+
+//Program 4.3.6 Generic FIFO queue (linked list)
+class Queue<Item>
+{
+    private Node first;
+    private Node last;
+    private int n = 0;
+    private class Node
+    {
+        Item item;
+        Node next;
+    }
+    public boolean isEmpty()
+    { return (first == null); }
+    public int size()
+    {
+        return n;
+    }
+    public void enqueue(Item item)
+    { // Insert a new node at the end of the list.
+        Node oldLast = last;
+        last = new Node();
+        last.item = item;
+        last.next = null;
+        if (isEmpty()) first = last;
+        else oldLast.next = last;
+        n++;
+    }
+    public Item dequeue()
+    { // Remove the first node from the list and return item.
+        Item item = first.item;
+        first = first.next;
+        if (isEmpty()) last = null;
+        n--;
+        return item;
+    }
+}
