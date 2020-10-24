@@ -1,0 +1,52 @@
+//4.3.13 Write a program that takes from standard input an expression
+// without left
+//        parentheses and prints the equivalent infix expression with
+//        the parentheses inserted. For example, given the input
+//        1 + 2 ) * 3 - 4 ) * 5 - 6 ) ) )
+//        your program should print
+//        ( ( 1 + 2 ) * ( ( 3 - 4 ) * ( 5 - 6 ) )
+//                ((1+2)*((3-4)*(5-6)))
+
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+import java.util.Stack;
+
+public class EX4313 {
+    public static void main(String[] args)
+    {
+        Stack<String> exp = new Stack<String>();
+        Stack<String> numsAndOps = new Stack<String>();
+        String temp;
+        // maybe possiblemultiRightParen is a better name
+        // this var indicates tht a rightParen was read in and there may be more rightParens coming
+        boolean multiRightParen = false;
+        while (!StdIn.isEmpty())
+        { // Read token
+            String token = StdIn.readString();
+            if (token.equals(")") && !multiRightParen) {
+                // pop nm, op, nm
+                multiRightParen = true;
+                temp = ")";
+                temp = numsAndOps.pop() + temp;
+                temp = numsAndOps.pop() + temp;
+                temp = numsAndOps.pop() + temp;
+                temp = "(" + temp;
+                exp.push(temp);
+            }
+            else if (token.equals(")") && multiRightParen) {
+                temp = ")";
+                temp = exp.pop() + temp;
+                temp = numsAndOps.pop() + temp;
+                temp = exp.pop() + temp;
+                temp = "(" + temp;
+                exp.push(temp);
+            }
+            else {
+                numsAndOps.push(token);
+                // foll is exec extra times, not good
+                multiRightParen = false;
+            }
+        }
+        StdOut.println(exp.pop());
+    }
+}
