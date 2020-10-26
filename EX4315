@@ -1,0 +1,45 @@
+//        4.3.15 Write a program EvaluatePostfix that takes a postfix
+//        expression from
+//        standard input, evaluates it, and prints the value. (Piping the
+//        output of your program from the previous exercise to this
+//        program gives equivalent behavior to
+//        Evaluate, in program 4.3.5.)
+
+import edu.princeton.cs.algs4.StdIn;
+
+public class EX4315 {
+    public static void main(String[] args) {
+        double v = EvaluatePostfix();
+        System.out.print(v);
+    }
+    public static double EvaluatePostfix() {
+        // p590 eval a postfix , need only 1 stk
+        Stack<String> stk = new Stack<>();
+        // scan: push operands onto s
+        // if operator, pop nums, push res
+
+        double v = 0;
+// 1 2 3 + 4 5 * * +
+        while (!StdIn.isEmpty()) {
+            String token = StdIn.readString();
+            // assum only +,-,*,/
+            if ((token.equals("+") || token.equals("-")
+            || token.equals("*") || token.equals("/")) && stk.size() > 0) {
+                v = Double.valueOf(stk.pop());
+                if (token.equals("+"))
+                    v = Double.valueOf(stk.pop()) + v;
+                else if (token.equals("-"))
+                    v = Double.valueOf(stk.pop()) - v;
+                else if (token.equals("*"))
+                    v = Double.valueOf(stk.pop()) * v;
+                else if (token.equals("/"))
+                    v = Double.valueOf(stk.pop()) / v;
+                stk.push(String.valueOf(v));
+
+            }
+            else
+                stk.push(token);
+        }
+        return v;
+    }
+}
