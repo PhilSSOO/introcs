@@ -1,0 +1,30 @@
+
+//4.3.17 Write an iterable Stack client that has a static method copy()
+// that takes a
+//        stack of strings as its argument and returns a copy of the
+//        stack. See exercise 4.3.48
+//        for an alternative approach
+
+import java.util.Stack;
+import java.util.Iterator;
+
+public class EX4317 {
+// Java code to illustrate iterator()
+// https://www.geeksforgeeks.org/stack-iterator-method-in-java-with-example/
+    public static Stack<String> copy(Stack<String> stack) {
+        Iterator itr = stack.iterator();
+        java.util.Stack<String> stack1 = new java.util.Stack<String>();
+        while (itr.hasNext()) {
+            stack1.push((String)itr.next());
+        }
+        return stack1;
+    }
+
+    public static void main(String[] args) {
+        Stack<String> stk = new Stack<>();
+        stk.push("a");
+        stk.push("b");
+        Stack<String> stack1 = copy(stk);
+        System.out.print(stack1.peek());
+    }
+}
