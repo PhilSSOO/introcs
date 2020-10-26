@@ -1,0 +1,42 @@
+//4.3.14 Write a filter InfixToPostfix that converts an arithmetic
+// expression from
+//        infix to postfix
+
+import edu.princeton.cs.algs4.StdIn;
+
+import java.util.Stack;
+
+public class EX4314 {
+    public static void main(String[] args) {
+        filter();
+    }
+
+    public static void filter() {
+        java.util.Stack<String> opstk = new java.util.Stack<String>();
+        java.util.Stack<String> stk = new Stack<String>();
+        // input ( ( 1 + 2 ) * ( ( 3 - 4 ) * ( 5 - 6 ) ) ) to test
+        while (!StdIn.isEmpty()) {
+            String token = StdIn.readString();
+            if (isNumeric(token)) {
+                stk.push(token);
+            }
+            else if (token.equals("+")){// assum ops are + - *
+                opstk.push(token);
+            }
+            else if (token.equals("-")) opstk.push(token);
+            else if (token.equals("*")) opstk.push(token);
+            else if(token.equals(")")) {
+                String temp = "";
+                temp = " " + opstk.pop() + temp;
+                temp = " " + stk.pop() + temp;
+                temp = stk.pop() + temp;
+                stk.push(temp);
+            }
+        }
+        System.out.println(stk.pop());
+    }
+    
+    private static boolean isNumeric(String str) {
+        return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    }
+}
