@@ -1,0 +1,36 @@
+//4.3.18 Write a Queue client that takes an integer command-line argument k and
+//        prints the kth from the last string found on standard input
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class EX4318 {
+    // Iterate through Queue in Java
+    public static void main (String[] args)
+    {
+        int k = 3;
+        Queue<Integer> queue = new LinkedList<Integer>();
+        queue.add(1);
+        queue.add(2);
+        queue.add(3);
+        queue.add(12);
+        queue.add(13);
+        printKth(queue, k);
+    }
+
+    public static void printKth(Queue<Integer> queue, int k) {
+        int sz = queue.size();
+        Iterator<Integer> itr = queue.iterator();
+        int cnt = 0;
+
+        while (itr.hasNext())
+        {
+            cnt++;
+            if (cnt == sz-k+1)
+                System.out.println(itr.next());
+            else
+                itr.next();
+        }
+    }
+}
