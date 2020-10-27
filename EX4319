@@ -13,33 +13,38 @@ public class EX4319 {
 }
 
 class ResizingArrayQueueOfStrings1 {
+    private int n = 0;// nums of items
     private int start;// fst slot with a str
     private int end; // fst slot emp
     private String[] items = new String[1];
 
     // refer p579 Program 4.3.3 Stack of strings (resizing array)
     private void resize(int capacity)
-    { 
+    {
         String[] temp = new String[capacity];
-        for (int i = start; i < end; i++) {
-            temp[i-start] = items[i];
+        if (start == end)
+            temp[0] = items[start];
+        else {
+            for (int i = start; i < end; i++) {
+                temp[i-start] = items[i];
+            }
+            int endminusstart = end - start;
+            start = 0;
+            end = endminusstart;
         }
-        int endminusstart = end - start;
-        start = 0;
-        end = endminusstart;
         items = temp;
     }
 
     public boolean isEmpty()
-    { return (end == start && items[start] == null); }
+    { return (n == 0); }
 
     public void enque(String item) throws Exception {
-        items[end] = item;
-//        end = (end+1)%items.length;
-        end = end+1;
-        if (end - start == items.length) {
+        if (n == items.length) {
             resize(2*items.length);
         }
+        items[end] = item;
+        end++;
+        n++;
     }
 
     public String deque() throws Exception { // Remove the first
@@ -47,57 +52,28 @@ class ResizingArrayQueueOfStrings1 {
             return null;
         String item = items[start];
         items[start] = null;
-        start = start+1;
-//        start = (start+1)%items.length;
-        if (end - start > 0 && end - start == items.length/4) resize(items.length/2);
-        if (isEmpty()) {
-            start = 0;
-            end = 0;
-        }
+        start++;
+        n--;
+        if (n > 0 && n == items.length/4) resize(items.length/2);
+
         return item;
     }
 
     public static void main(String[] args) throws Exception {
         ResizingArrayQueueOfStrings1 rr = new ResizingArrayQueueOfStrings1();
-        rr.enque("a");
-        rr.enque("a1");
-        rr.enque("a2");
-        System.out.println(rr.deque());
-        rr.deque();
-        System.out.println(rr.deque());
-        System.out.println(rr.isEmpty());
-        rr.enque("a3");
-        rr.deque();
-        System.out.println(rr.deque());
-        rr.enque("a4");
-        rr.enque("a5");
-        rr.deque();
-        rr.deque();
-        System.out.println(rr.deque());
-        rr.enque("a");
-        rr.enque("a1");
-        rr.enque("a2");
-        System.out.println(rr.deque());
-        rr.deque();
-        System.out.println(rr.deque());
-        System.out.println(rr.isEmpty());
-        rr.enque("a3");
-        rr.deque();
-        System.out.println(rr.deque());
-        rr.enque("a4");
-        rr.enque("a5");
-        rr.deque();
-        rr.deque();
-        System.out.println(rr.deque());
-        System.out.println(rr.isEmpty());
-        System.out.println(rr.isEmpty());
-        rr.enque("a");
-        rr.enque("a1");
-        rr.enque("a2");
-        System.out.println(rr.deque());
-        System.out.println(rr.deque());
-        System.out.println(rr.deque());
-        System.out.println(rr.deque());
+        // to be or not to - be - - that
+        while (!StdIn.isEmpty()) {
+            String ss = StdIn.readString();
+            if (ss.equals("-")) {
+                System.out.println(rr.deque());
+            }
+            else
+                rr.enque(ss);
+            for (int i = 0; i < rr.items.length; i++) {
+                System.out.print(rr.items[i] + " ");
+            }
+            System.out.println();
+        }
     }
 }
 
