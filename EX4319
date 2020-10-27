@@ -8,8 +8,6 @@
 //        to maintain the
 //        array indices of the items at the front and back of the queue
 
-import java.util.Iterator;
-
 public class EX4319 {
 
 }
