@@ -70,16 +70,12 @@ class ResizingArrayQueueOfStrings1 {
     private void resize(int capacity)
     {
         String[] temp = new String[capacity];
-        if (start == end)
-            temp[0] = items[start];
-        else {
-            for (int i = start; i < end; i++) {
-                temp[i-start] = items[i];
-            }
-            int endminusstart = end - start;
-            start = 0;
-            end = endminusstart;
+        for (int i = start; i < end; i++) {
+            temp[i-start] = items[i];
         }
+        int endminusstart = end - start;
+        start = 0;
+        end = endminusstart;
         items = temp;
     }
 
