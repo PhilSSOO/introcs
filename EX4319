@@ -1,0 +1,108 @@
+//4.3.19 Develop a data type ResizingArrayQueueOfStrings that implements a
+//        queue with a fixed-length array in such a way that all operations
+//        take constant time.
+//        Then, extend your implementation to use a resizing array to
+//        remove the length restriction. Hint: The challenge is that the
+//        items will “crawl across” the array as items
+//        are added to and removed from the queue. Use modular arithmetic
+//        to maintain the
+//        array indices of the items at the front and back of the queue
+
+import java.util.Iterator;
+
+public class EX4319new {
+
+}
+
+class ResizingArrayQueueOfStrings1 {
+    private int start;// fst slot with a str
+    private int end; // fst slot emp
+    private String[] items = new String[1];
+
+    // refer p579 Program 4.3.3 Stack of strings (resizing array)
+    private void resize(int capacity)
+    { 
+        String[] temp = new String[capacity];
+        for (int i = start; i < end; i++) {
+            temp[i-start] = items[i];
+        }
+        int endminusstart = end - start;
+        start = 0;
+        end = endminusstart;
+        items = temp;
+    }
+
+    public boolean isEmpty()
+    { return (end == start && items[start] == null); }
+
+    public boolean isFull()
+    { return (end == start && items[start] != null); }
+
+    public void enque(String item) throws Exception {
+        items[end] = item;
+//        end = (end+1)%items.length;
+        end = end+1;
+        if (end - start == items.length) {
+            resize(2*items.length);
+        }
+    }
+
+    public String deque() throws Exception { // Remove the first
+        if (isEmpty())
+            return null;
+        String item = items[start];
+        items[start] = null;
+        start = start+1;
+//        start = (start+1)%items.length;
+        if (end - start > 0 && end - start == items.length/4) resize(items.length/2);
+        if (isEmpty()) {
+            start = 0;
+            end = 0;
+        }
+        return item;
+    }
+
+    public static void main(String[] args) throws Exception {
+        ResizingArrayQueueOfStrings1 rr = new ResizingArrayQueueOfStrings1();
+        rr.enque("a");
+        rr.enque("a1");
+        rr.enque("a2");
+        System.out.println(rr.deque());
+        rr.deque();
+        System.out.println(rr.deque());
+        System.out.println(rr.isEmpty());
+        rr.enque("a3");
+        rr.deque();
+        System.out.println(rr.deque());
+        rr.enque("a4");
+        rr.enque("a5");
+        rr.deque();
+        rr.deque();
+        System.out.println(rr.deque());
+        rr.enque("a");
+        rr.enque("a1");
+        rr.enque("a2");
+        System.out.println(rr.deque());
+        rr.deque();
+        System.out.println(rr.deque());
+        System.out.println(rr.isEmpty());
+        rr.enque("a3");
+        rr.deque();
+        System.out.println(rr.deque());
+        rr.enque("a4");
+        rr.enque("a5");
+        rr.deque();
+        rr.deque();
+        System.out.println(rr.deque());
+        System.out.println(rr.isEmpty());
+        System.out.println(rr.isEmpty());
+        rr.enque("a");
+        rr.enque("a1");
+        rr.enque("a2");
+        System.out.println(rr.deque());
+        System.out.println(rr.deque());
+        System.out.println(rr.deque());
+        System.out.println(rr.deque());
+    }
+}
+
