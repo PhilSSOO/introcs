@@ -12,6 +12,54 @@ public class EX4319 {
 
 }
 
+class FixedSizeArrayQueueOfStrings {
+    private int start;// first slot with a str
+    private int end; // first slot empty
+    private String[] aa;
+
+    public FixedSizeArrayQueueOfStrings(int sz) {
+        start = 0;
+        end = 0;
+        aa = new String[sz];
+    }
+    public boolean isEmpty()
+    { return (end == start && aa[start] == null); }
+
+    public void enqueue(String item) throws Exception {
+        if (end == start && aa[start] != null) {
+            throw new Exception("qu is full");
+        }
+        aa[end] = item;
+        end = (end+1)%aa.length;
+    }
+
+    public String dequeue() throws Exception { // Remove the first
+        if (isEmpty())
+            throw new Exception("qu is emp");
+        String item = aa[start];
+        aa[start] = null;
+        start = (start+1)%aa.length;
+        return item;
+    }
+
+    public static void main(String[] args) throws Exception {
+        FixedSizeArrayQueueOfStrings ff = new FixedSizeArrayQueueOfStrings(4);
+        // ff.dequeue();
+        ff.enqueue("a");
+        ff.enqueue("a1");
+        ff.enqueue("a2");
+        ff.enqueue("a3");
+        System.out.println(ff.dequeue());
+        ff.enqueue("a4");
+        System.out.println(ff.dequeue());
+        ff.enqueue("a5");
+        System.out.println(ff.dequeue());
+        for (int i = 0; i < 4; i++) {
+            System.out.println(ff.aa[i]);
+        }
+    }
+}
+
 class ResizingArrayQueueOfStrings1 {
     private int n = 0;// nums of items
     private int start;// fst slot with a str
@@ -55,7 +103,6 @@ class ResizingArrayQueueOfStrings1 {
         start++;
         n--;
         if (n > 0 && n == items.length/4) resize(items.length/2);
-
         return item;
     }
 
