@@ -43,12 +43,12 @@ public class EX445A {
         {
             word = StdIn.readString();
             if (word.length() < minlen) continue;
-            if (!st.found(word))
-                st.putToTwoArrs(word, i);
-            else {
-                qu = st.get1(word);
-                qu.enqueue(i);
+            if (!st.found(word)) {
+                st.put(word, new Queue<Integer>());
+                st.increaseN();
             }
+            qu = st.get(word);
+            qu.enqueue(i);
         }
 
 // Print words whose occurrence count exceeds threshold.
@@ -95,7 +95,7 @@ class BinarySearchST {
         return qArr[indx];
     }
 
-    public Queue<Integer> get1(String key) // calls found
+    public Queue<Integer> get(String key) // calls found
     {
             int indx = retIndex(key);
             return qArr[indx];
@@ -125,14 +125,10 @@ class BinarySearchST {
         }
     }
 
-    public void putToTwoArrs(String key, int ii) // String[] keys,
-    {
+    public void put(String key, Queue<Integer> qq) {
         int yy = retIndex(key);
         insert(key,yy);
-        Queue<Integer> positions = new Queue<>();
-        positions.enqueue(ii);
-        insert(positions, yy);
-        n++;
+        insert(qq, yy);
     }
 
     public void increaseN() {
