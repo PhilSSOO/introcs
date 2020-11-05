@@ -1,0 +1,260 @@
+
+//4.4.5 Develop an implementation BinarySearchST of the symbol-table
+// API that
+//        maintains parallel arrays of keys and values, keeping them in
+//        key-sorted order. Use
+//        binary search for get, and move larger key–value pairs to the
+//        right one position for
+//        put (use a resizing array to keep the array length proportional
+//        to the number of key–
+//        value pairs in the table). Test your implementation with Index,
+//        and validate the
+//        hypothesis that using such an implementation for Index takes
+//        time proportional to
+//        the product of the number of strings and the number of distinct
+//        strings in the input
+
+import edu.princeton.cs.algs4.*;
+
+public class EX445A {
+    public static void main(String[] args)
+    {
+        int minlen = Integer.parseInt(args[0]);
+        int minocc = Integer.parseInt(args[1]);
+// Create and initialize the symbol table.
+        BinarySearchST st;
+        st = new BinarySearchST();
+        String word;
+        Queue<Integer> qu;
+        int count = -1;
+        // add a qualified String as the first item in the BinarySearchST's keys[]
+        do {
+            word = StdIn.readString();
+            count++;
+        } while (word.length() < minlen);
+
+        st.insert(word,0);
+        qu = new Queue<>();
+        qu.enqueue(count);
+        st.insert(qu, 0);
+        st.increaseN();
+
+        for (int i = count+1; !StdIn.isEmpty(); i++)
+        {
+            word = StdIn.readString();
+            if (word.length() < minlen) continue;
+            if (!st.found(word))
+                st.putToTwoArrs(word, i);
+            else {
+                qu = st.get1(word);
+                qu.enqueue(i);
+            }
+        }
+
+// Print words whose occurrence count exceeds threshold.
+        for (String s : st.keys())
+        {
+            Queue<Integer> queue = st.get1(s);
+            if (queue.size() >= minocc)
+                StdOut.println(s + ": " + queue);
+        }
+    }
+}
+
+class BinarySearchST {
+    private int n = 0; // num of keys
+    private String[] keys;
+    private Queue[] qArr;
+    private boolean  found;
+
+    public BinarySearchST() {
+        keys = new String[1];
+        qArr = new Queue[1];
+    }
+
+    public String[] keys() {
+        return keys;
+    }
+
+    public void printQarr() // calls found
+    {
+        Queue<Integer> que;
+        for (String s : keys)
+        {
+            if (s == null)
+                break;
+            que = printHelper(s);
+            StdOut.println(s + ": " + que);
+        }
+        System.out.println();
+    }
+
+    public Queue<Integer> printHelper(String key)
+    {
+        int indx = retIndex(key);
+        return qArr[indx];
+    }
+
+    public Queue<Integer> get1(String key) // calls found
+    {
+            int indx = retIndex(key);
+            return qArr[indx];
+    }
+
+    private static int stringCompare(String str1, String str2)
+    {
+        int l1 = str1.length();
+        int l2 = str2.length();
+        int lmin = Math.min(l1, l2);
+
+        for (int i = 0; i < lmin; i++) {
+            int str1_ch = (int)str1.charAt(i);
+            int str2_ch = (int)str2.charAt(i);
+
+            if (str1_ch != str2_ch) {
+                return str1_ch - str2_ch;
+            }
+        }
+        if (l1 != l2) {
+            return l1 - l2;
+        }
+        // If none of the above conditions is true,
+        // it implies both the strings are equal
+        else {
+            return 0;
+        }
+    }
+
+    public void putToTwoArrs(String key, int ii) // String[] keys,
+    {
+        int yy = retIndex(key);
+        insert(key,yy);
+        Queue<Integer> positions = new Queue<>();
+        positions.enqueue(ii);
+        insert(positions, yy);
+        n++;
+    }
+
+    public void increaseN() {
+        n++;
+    }
+
+    public int retIndex(String xx) {
+        int lastNonNull = lastNonNullIndex();
+        if (stringCompare(xx,keys[lastNonNull]) > 0) {
+            return n;
+        }
+        if (stringCompare(xx,keys[lastNonNull]) == 0) {
+            return n-1;
+        }
+        if (stringCompare(xx, keys[0]) <= 0) {
+            return 0;
+        }
+        // ll left pointer, rr right pointer
+        int ll = 0, rr = lastNonNull + 1;
+        int tempIndex = -1;
+        String tempValue = "";
+        while (ll <= rr) {
+            tempIndex = (ll + rr)/2;
+            tempValue = keys[tempIndex];
+            if (stringCompare(xx, tempValue) < 0) {
+                rr = tempIndex-1;
+            }
+            else if (stringCompare(xx, tempValue) > 0) {
+                ll = tempIndex+1;
+            }
+            else {
+                return tempIndex;
+            }
+        }
+        // when we get here, xx != keys[tempIndex]
+        if(stringCompare(xx, tempValue) < 0) {
+            return tempIndex;
+        }
+        else {
+            return tempIndex+1;
+        }
+    }
+
+    private void resizekeys(int capacity)
+    { 
+        String[] temp = new String[capacity];
+        for (int i = 0; i < n; i++)
+            temp[i] = keys[i];
+        keys = temp;
+    }
+
+    private void resizeQARR(int capacity)
+    { 
+        Queue[] temp = new Queue[capacity];
+        for (int i = 0; i < n; i++)
+            temp[i] = qArr[i];
+        qArr = temp;
+    }
+
+    public void insert(String key, int x)
+    {
+        if (n == keys.length) {
+            resizekeys(2*n);
+        }
+        for (int i = n-1; i >= x; i--) {
+            keys[i+1] = keys[i];
+        }
+        keys[x] = key;
+    }
+
+    public void insert(Queue<Integer> queue, int x)
+    {
+        if (n == qArr.length) {
+            resizeQARR(2*n);
+        }
+        for (int i = n-1; i >= x; i--) {
+            qArr[i+1] = qArr[i];
+        }
+        qArr[x] = queue;
+    }
+
+    private int lastNonNullIndex() { // String[] aa
+        int le = keys.length;
+        int ii = le-1;
+        while (ii >= 0 && keys[ii] == null) {
+            ii--;
+        }
+        if (ii < 0)
+            return 0;
+        return ii;
+    }
+
+    public boolean found(String xx) {
+        int lastNonNull = lastNonNullIndex();
+        if (stringCompare(xx,keys[lastNonNull]) > 0 || stringCompare(xx,keys[0]) < 0) {
+            return false;
+        }
+        // ll left pointer, rr right pointer
+        int ll = 0, rr = lastNonNull+1;
+        int tempIndex;
+        String tempValue;
+
+        while (ll <= rr) {
+            tempIndex = (ll + rr)/2;
+            if (keys[tempIndex] != null) {
+                tempValue = keys[tempIndex];
+                if (stringCompare(xx,tempValue) < 0) {
+                    rr = tempIndex-1;
+                }
+                else if (stringCompare(xx,tempValue) > 0) {
+                    ll = tempIndex+1;
+                }
+                else {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+
+
+
+
+
