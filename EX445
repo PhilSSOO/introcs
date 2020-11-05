@@ -54,7 +54,7 @@ public class EX445A {
 // Print words whose occurrence count exceeds threshold.
         for (String s : st.keys())
         {
-            Queue<Integer> queue = st.get1(s);
+            Queue<Integer> queue = st.get(s);
             if (queue.size() >= minocc)
                 StdOut.println(s + ": " + queue);
         }
