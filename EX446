@@ -1,0 +1,104 @@
+
+//4.4.6 Develop an implementation SequentialSearchST of the symbol-table API
+//        that maintains a linked list of nodes containing keys and values,
+//        keeping them in
+//        arbitrary order. Test your implementation with Index, and
+//        validate the hypothesis
+//        that using such an implementation for Index takes time
+//        proportional to the product of the number of strings and the
+//        number of distinct strings in the input.
+
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+
+public class EX446 {
+    public static void main(String[] args)
+    {
+        int minlen = Integer.parseInt(args[0]);
+        int minocc = Integer.parseInt(args[1]);
+// Create and initialize the symbol table.
+        SequentialSearchST st;
+        st = new SequentialSearchST();
+        String word;
+        Queue<Integer> qu;
+        
+        for (int i = 0; !StdIn.isEmpty(); i++)
+        {
+            word = StdIn.readString();
+            if (word.length() < minlen) continue;
+            if (!st.found(word)) {
+                qu = new Queue<Integer>();
+                qu.enqueue(i);
+                st.put(word, qu);
+            }
+            else {
+                qu = st.get(word);
+                qu.enqueue(i);
+            }
+        }
+// Print words whose occurrence count exceeds threshold.
+        st.printST(minocc);
+    }
+}
+
+class SequentialSearchST {
+    class Node {
+        private String key;
+        private Queue<Integer> value;
+        private Node next;
+
+        public Node(String k, Queue<Integer> val) {
+            key = k;
+            value = val;
+            next = null;
+        }
+    }
+    private Node first = new Node(new String(), new Queue<>());
+
+    public void put(String ky, Queue<Integer> qq) {
+        Node prv = first;
+        Node nd = first;
+        while (nd != null) {
+            prv = nd;
+            nd = nd.next;
+        }
+        nd = new Node(ky,qq);
+        prv.next = nd;
+    }
+
+    public void printST(int minocc)
+    {
+        Node nd = first;
+        while (nd != null) {
+            if (nd.value.size() >= minocc)
+                StdOut.println(nd.key + ": " + nd.value);
+            nd = nd.next;
+        }
+    }
+
+    public Queue<Integer> get(String key) 
+    {
+        Node nd = first;
+        while (nd != null) {
+            if (!nd.key.equals(key))
+                nd = nd.next;
+            else
+                break;
+        }
+        return nd.value;
+    }
+
+    public boolean found(String xx) {
+        Node nd = first;
+        while (nd != null) {
+            if (nd.key.equals(xx))
+                return true;
+            nd = nd.next;
+        }
+        return false;
+    }
+}
+
+
