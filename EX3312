@@ -1,0 +1,55 @@
+
+//3.3.12 Override the equals() method for Charge (program 3.2.6) so
+// that two
+//        Charge objects are equal if they have identical position
+//        and charge value. Override
+//        the hashCode() method using the Objects.hash() technique
+//        described in this
+//        section.
+
+import java.util.Objects;
+
+public class EX3312 {
+    public static void main(String[] args) {
+        double x0 = 2, y0 = 1, q0 = 1;
+        Charge c0 = new Charge(x0, y0, q0);
+        double x1 = .2, y1 = 1, q1 = 1;
+        Charge c1 = new Charge(x1, y1, q1);
+        System.out.println(c0.equals(c1));
+        System.out.println(c0.hashCode());
+        System.out.println(c1.hashCode());
+    }
+}
+
+// p389
+class Charge
+{
+    private final double rx, ry;
+    private final double q;
+    public Charge(double x0, double y0, double q0)
+    { rx = x0; ry = y0; q = q0; }
+    
+    // EPSILON???
+    public boolean equals(Charge b)
+    { return rx == b.rx && ry == b.ry && q == b.q;}
+
+    // txtbk p456
+    //• Ensure that the data type is immutable.
+    //• Import the class java.util.Objects.
+    //• Implement equals() by comparing all significant instance variables.
+    //• Implement hashCode() by using all significant instance variables
+    //    as arguments to the static method Objects.hash().
+    public int hashCode()
+    { return Objects.hash(rx,ry,q); }
+
+    public double potentialAt(double x, double y)
+    {
+        double k = 8.99e09;
+        double dx = x - rx ;
+        double dy = y - ry ;
+        return k * q / Math.sqrt(dx*dx + dy*dy);
+    }
+    
+    public String toString()
+    { return q +" at " + "("+ rx + ", " + ry +")"; }
+}
