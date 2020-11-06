@@ -1,0 +1,35 @@
+    // 3.3.14 Add a toString() method to Vector that returns the
+    // vector components,
+    //separated by commas, and enclosed in matching parentheses.
+    
+import java.util.Objects;
+
+public class EX3314 {
+    public static void main(String[] args) {
+        Vector vv = new Vector(new double[]{0,1,2});
+        System.out.println(vv);
+    }
+}
+
+class Vector
+{
+    private final double[] coords;
+    public Vector(double[] a)
+    { // Make a defensive copy to ensure immutability.
+        coords = new double[a.length];
+        for (int i = 0; i < a.length; i++)
+            coords[i] = a[i];
+    }
+
+    public String toString()
+    {
+        String res = "(";
+        for (int i = 0; i < coords.length-1; i++) {
+            res += coords[i] + ", ";
+        }
+        res += coords[coords.length-1] + ")";
+        return res;
+    }
+    // all rest functions omitted
+ 
+}
