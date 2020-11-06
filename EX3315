@@ -1,0 +1,118 @@
+
+//3.3.15 Add a toString() method to Sketch that returns a string
+//        representation
+//        of the unit vector corresponding to the sketch.
+
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+import java.util.Objects;
+
+public class EX3315 {
+    public static void main(String[] args)
+    {
+        int k = 2;//Integer.parseInt(args[0]);
+        int d = 4;//Integer.parseInt(args[1]);
+        String text = "ATAGATGCATAGCGCATAGC";//StdIn.readAll();
+        Sketch sketch = new Sketch(text, k, d);
+        StdOut.println(sketch.toString());
+    }
+}
+// p461
+class Sketch
+{
+    private final Vector profile;
+    public Sketch(String text, int k, int d)
+    {
+        int n = text.length();
+        double[] freq = new double[d];
+        for (int i = 0; i < n-k-1; i++)
+        {
+            String kgram = text.substring(i, i+k);
+            int hash = kgram.hashCode();
+            freq[Math.abs(hash % d)] += 1;
+        }
+        Vector vector = new Vector(freq);
+        profile = vector.direction();
+    }
+    public double similarTo(Sketch other)
+    { return profile.dot(other.profile); }
+
+    public String toString()
+    {
+        String ss = "(";
+        int d = profile.dimension();
+        for (int i = 0; i < d-1; i++) {
+            ss += profile.cartesian(i) + ", ";
+        }
+        ss += profile.cartesian(d-1) + ")";
+        return ss;
+    }
+}
+
+class Vector
+{
+    private final double[] coords;
+    public Vector(double[] a)
+    { // Make a defensive copy to ensure immutability.
+        coords = new double[a.length];
+        for (int i = 0; i < a.length; i++)
+            coords[i] = a[i];
+    }
+    // toString EX3314
+    // 3.3.14 Add a toString() method to Vector that returns the
+    // vector components,
+    //separated by commas, and enclosed in matching parentheses.
+    public String toString()
+    {
+        String res = "(";
+        for (int i = 0; i < coords.length-1; i++) {
+            res += coords[i] + ", ";
+        }
+        res += coords[coords.length-1] + ")";
+        return res;
+    }
+    public boolean equals(Vector that)
+    {
+        for (int i = 0; i < coords.length; i++) {
+            if (coords[i] != that.coords[i])
+                return false;
+        }
+        return true;
+    }
+
+    public int hashCode()
+    {
+        return Objects.hash(coords[0], coords[1], coords[2]);
+    }
+
+    public Vector plus(Vector that)
+    { // Sum of this vector and that.
+        double[] result = new double[coords.length];
+        for (int i = 0; i < coords.length; i++)
+            result[i] = this.coords[i] + that.coords[i];
+        return new Vector(result);
+    }
+    public Vector scale(double alpha)
+    { // Scale this vector by alpha.
+        double[] result = new double[coords.length];
+        for (int i = 0; i < coords.length; i++)
+            result[i] = alpha * coords[i];
+        return new Vector(result);
+    }
+    public double dot(Vector that)
+    { // Dot product of this vector and that.
+        double sum = 0.0;
+        for (int i = 0; i < coords.length; i++)
+            sum += this.coords[i] * that.coords[i];
+        return sum;
+    }
+    public double magnitude()
+    { return Math.sqrt(this.dot(this)); }
+    public Vector direction()
+    { return this.scale(1/this.magnitude()); }
+    public double cartesian(int i)
+    { return coords[i]; }
+    // added by SYQ 9.15.20
+    public int dimension()
+    { return coords.length; }
+}
