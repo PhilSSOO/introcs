@@ -1,0 +1,141 @@
+package a44ST;
+
+import edu.rice.cs.drjava.config.OptionConstants;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+//4.4.8 Implement the method contains() for HashST
+public class EX448 {
+    public static void main(String[] args) {
+
+    }
+}
+
+// p638
+class HashST//<Key, Value>
+{
+    private int m = 5;//1024;
+    private Node[] lists = new Node[m];
+    private class Node
+    { private Object key;
+        private Object val;
+        private Node next;
+        public Node(Object key, Object val, Node next)
+        {
+            this.key = key;
+            this.val = val;
+            this.next = next;
+        }
+    }
+
+    private int hash(Object key)
+    { return Math.abs(key.hashCode() % m); }
+    // ex448
+    public boolean contains(Object key)
+    {
+        int i = hash(key);
+        for (Node x = lists[i]; x != null; x = x.next)
+            if (key.equals(x.key))
+                return true;
+        return false;
+    }
+
+    // 4.4.9 Implement the method size() for HashST
+    public int size()
+    {
+        int sz = 0;
+        int lenLinkedList;
+        for (int i = 0; i < lists.length; i++) {
+            lenLinkedList = 0;
+            for (Node x = lists[i]; x != null; x = x.next) {
+                lenLinkedList++;
+            }
+            sz += lenLinkedList;
+        }
+        return sz;
+    }
+
+    // 4.4.10 Implement the method keys() for HashST
+    public Object[] keys()
+    {
+        List<Object> lst = new ArrayList<>();
+        for (int i = 0; i < lists.length; i++) {
+            for (Node x = lists[i]; x != null; x = x.next) {
+                lst.add(x.key);
+            }
+        }
+        return lst.toArray();
+    }
+
+    // 4.4.11 Modify HashST to add a method remove() that takes a Key argument and
+    //removes that key (and the corresponding value) from the symbol table, if it exists
+    public void remove(Object key) {
+        int i = hash(key);
+        // special case
+        if (lists[i] == null)
+            return;
+        // first node holds the key
+        if (lists[i].key == key) {
+            lists[i] = lists[i].next;
+            return;
+        }
+        // general case, key is NOT the fst of a LLst
+        Node prv = lists[i];
+        for (Node x = lists[i]; x != null; x = x.next) {
+            if (key.equals(x.key)) {
+                // standard operation to rmv a node frm a linklst
+                prv.next = x.next;
+                return;
+            }
+            prv = x;
+        }
+    }
+
+    public Object get(Object key)
+    {
+        int i = hash(key);
+        for (Node x = lists[i]; x != null; x = x.next)
+            if (key.equals(x.key))
+                return (Object) x.val;
+        return null;
+    }
+    public void put(Object key, Object val)
+    {
+        int i = hash(key);
+        for (Node x = lists[i]; x != null; x = x.next)
+        {
+            if (key.equals(x.key))
+            {
+                x.val = val;
+                return;
+            }
+        }
+        // lets say we are adding AAA, GCC, ATG sequen..ly (all have
+        // i = 0 (int i = hash(key);), so ...
+        // the lists[i] argument is the first node, the lists[i] =    is the new first node
+        lists[i] = new Node(key, val, lists[i]);
+    }
+
+    public static void main(String[] args) {
+    // see p636, 639
+//        GGT is inserted in linked list 1, then TTA is
+//        inserted in linked list 3, then GCC is inserted in linked list 0, ....
+        HashST hst = new HashST();
+        hst.put("GGT", "Glycine");
+        hst.put("TTA", "Leucine");
+        // foll 3 added to linked list 0, ATG is fst in the LLst because of the way put is impl
+        hst.put("AAA", "Lysine");
+        hst.put("GCC", "Alanine");
+        hst.put("ATG", "Methionine");
+
+        String ss = (String)hst.get("GCC");
+        hst.remove("GCC");
+        boolean bb = hst.contains("GCC");
+        int sz = hst.size();
+        Object[] keys = hst.keys();
+    }
+}
+
+
