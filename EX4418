@@ -1,0 +1,18 @@
+
+/4.4.18 Implement the method contains() for BST
+
+//public boolean contains(Key key)
+//    {
+//        Node curr = root;
+//        while (curr != null) {
+//            int cmp = key.compareTo(curr.key);
+//            if (cmp < 0) { // key < curr
+//                curr = curr.left;
+//            }
+//            else if (cmp > 0) {
+//                curr = curr.right;
+//            }
+//            else return true;
+//        }
+//        return false;
+//    }
