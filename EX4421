@@ -1,0 +1,22 @@
+    //    4.4.21 Implement the method toString() for BST, using a recursive
+//    helper
+//    method like traverse(). As usual, you can accept quadratic
+//    performance because
+//    of the cost of string concatenation. Extra credit : Write a
+//    linear-time toString()
+//    method for BST that uses StringBuilder.
+
+    public String toString()
+    {
+        return traverseHelp(root);
+    }
+
+    private String traverseHelp(Node rooot)
+    {
+        if (rooot == null)
+            // NOT return null;
+            return "";
+        return traverseHelp(rooot.left) + rooot.key + traverseHelp(rooot.right);
+    }
+    
+    
