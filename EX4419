@@ -1,0 +1,12 @@
+4.4.19 Implement the method size() for BST
+
+//    public int size() {
+//        return sizeHelp(root.left) + 1 + sizeHelp(root.right);
+//
+//    }
+//
+//    private int sizeHelp(Node rooot) {
+//        if (rooot == null)
+//            return 0;
+//        return sizeHelp(rooot.left) + 1 + sizeHelp(rooot.right);
+//    }
