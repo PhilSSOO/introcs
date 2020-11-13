@@ -4,38 +4,41 @@ Hint : Replace the key (and its associated value) with the next largest key in t
 (and its associated value); then remove from the BST the node that contained the
 next largest key
 
-//    public void remove(Key key)
-//    {
-//        Node prv = root;
-//        Node curr = root;
-//        while (curr != null) {
-//            int cmp = key.compareTo(curr.key);
-//            if (cmp < 0) { // key < curr
-//                prv =  curr;
-//                curr = curr.left;
-//            }
-//            else if (cmp > 0) {
-//                prv =  curr;
-//                curr = curr.right;
-//            }
-//            // found item to rmv
-//            else {
-//                Node lft = curr.left;
-//                Node rt = curr.right;
-//                if (lft == null && rt == null) {
-//                    curr = null;
-//                    return;
-//                }
-//                else if (lft == null){
-//                    prv.right = rt;
-//                    curr = null;
-//                    return;
-//                }
-//                else{
-//                    prv.left = lft;
-//                    curr = null;
-//                    return;
-//                }
-//            }
-//        }
-//    }
+    public void remove(Key key)
+    {
+        Node prv = root;
+        Node curr = root;
+        while (curr != null) {
+            int cmp = key.compareTo(curr.key);
+            if (cmp < 0) { // key < curr
+                prv =  curr;
+                curr = curr.left;
+            }
+            else if (cmp > 0) {
+                prv =  curr;
+                curr = curr.right;
+            }
+            // found item to rmv
+            else {
+                Node lft = curr.left;
+                Node rt = curr.right;
+                // if item to rmv is a leaf
+                if (lft == null && rt == null) {
+                    curr = null;
+                    return;
+                }
+                // if item to rmv has right child, link item's parent to
+                // the child
+                else if (lft == null){
+                    prv.right = rt;
+                    curr = null;
+                    return;
+                }
+                else {
+                    prv.left = lft;
+                    curr = null;
+                    return;
+                }
+            }
+        }
+    }
