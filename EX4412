@@ -1,0 +1,89 @@
+//4.4.12 Modify HashST to use a resizing array so that the average length
+// of the list associated with each hash value is between 1 and 8.
+
+import edu.princeton.cs.algs4.StdIn;
+import java.util.ArrayList;
+import java.util.List;
+
+public class EX4412 {
+// this prg is not done with ... between 1 and 8.
+}
+
+// p638
+class HashST//<Key, Value>
+{
+    private int m;//1024;
+    private Node[][] arrOfArrs;
+
+    public HashST(int mm) {
+        m = mm;
+        arrOfArrs = new Node[m][1];
+    }
+
+    private class Node { 
+        private Object key;
+        private Object val;
+
+        public Node(Object key, Object val)
+        {
+            this.key = key;
+            this.val = val;
+        }
+    }
+
+    private int hash(Object key)
+    { return Math.abs(key.hashCode() % m); }
+
+    public Object get(Object key)
+    {
+        int i = hash(key);
+        for (int j = 0; j < arrOfArrs[i].length; j++) {
+            Node x = arrOfArrs[i][j];
+            if (key.equals(x.key))
+                return (Object) x.val;
+        }
+        return null;
+    }
+
+    // ref txtbk p579
+    private void resize(int capacity, int i)
+    {
+        Node[] temp = new Node[capacity];
+        for (int ii = 0; ii < arrOfArrs[i].length; ii++)
+            temp[ii] = arrOfArrs[i][ii];
+        arrOfArrs[i] = temp;
+    }
+
+    public void put(Object key, Object val)
+    {
+        int i = hash(key);
+        int len = arrOfArrs[i].length;
+
+        for (int j = 0; j < len; j++) {
+            Node x = arrOfArrs[i][j];
+            if (x == null) {
+                arrOfArrs[i][j] = new Node(key, val);
+                return;
+            }
+            if (key.equals(x.key)) {
+                x.val = val;
+                return;
+            }
+        }
+        // when we get here, we didn't find key, so need to create
+        // but to do ths we need to fst resz
+        resize(2*len, i);
+        arrOfArrs[i][len] = new Node(key, val);
+    }
+
+    public static void main(String[] args) {
+        int m = 5;
+        HashST hst = new HashST(m);
+        hst.put("GGT", "Glycine");
+        hst.put("TTA", "Leucine");
+        hst.put("AAA", "Lysine");
+        hst.put("GCC", "Alanine");
+        hst.put("ATG", "Methionine");
+        String ss = (String)hst.get("GCC");
+    }
+}
