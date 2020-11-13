@@ -1,0 +1,63 @@
+package a44ST;
+
+public class EX4421SB {
+
+}
+
+//modified Program 4.4.4 Binary search tree, p646
+class BST<Key extends Comparable<Key>> //, Value>
+{
+    private Node root;
+    private StringBuilder sb = new StringBuilder();
+
+    private class Node
+    {
+        Key key;
+        Node left, right;
+        Node(Key ky)
+        { key = ky;}
+    }
+    // this put is a simplified ver: not care about value
+    public void put(Key key)
+    { root = put(root, key); }
+
+    private Node put(Node x, Key key)
+    {
+        if (x == null) return new Node(key);
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key);
+        else if (cmp > 0) x.right = put(x.right, key);
+        //  else x.val = val;
+        return x;
+    }
+
+    public void printSmallToLarge()
+    {
+        traverseHelp(root);
+    }
+
+    private void traverseHelp(Node node)
+    {
+        if (node == null)
+            return;
+        traverseHelp(node.left);
+        sb = sb.append(node.key + " "); // a small bug, the string resulted will be ended with a space
+        traverseHelp(node.right);
+    }
+
+    public static void main(java.lang.String[] args) {
+        BST bst = new BST();
+        bst.put("the");
+        bst.put("tm");
+        bst.put("w");
+        bst.put("bst");
+        bst.put("of");
+        bst.put("it");
+        bst.printSmallToLarge();    
+        
+    }
+}
+
+
+
+
