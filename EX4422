@@ -1,0 +1,70 @@
+
+import java.util.ArrayList;
+import java.util.List;
+
+//4.4.22 Modify the symbol-table API to handle values with duplicate
+// keys by having get() return an iterable for the values having a
+// given key. Implement BST and
+//        Index as dictated by this API. Discuss the pros and cons of
+//        this approach versus the
+//        one given in the text
+public class EX4422 {
+    public static void main(String[] args) {
+
+    }
+}
+
+//Program 4.4.4 Binary search tree
+class BST<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private class Node
+    {
+        Key key;
+        List<Value> values;
+        Node left, right;
+        Node(Key key, Value val) {
+            this.key = key;
+            values = new ArrayList<>();
+            values.add(val);
+        }
+    }
+    
+    public List<Value> get(Key key)
+    { return get(root, key); }
+
+    private List<Value> get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.values;
+    }
+
+    public void put(Key key, Value val)
+    { root = put(root, key, val); }
+    
+    private Node put(Node x, Key key, Value val)
+    {
+        if (x == null) return new Node(key, val);
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
+        else {
+            x.values.add(val);
+        }
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BST bst = new BST();
+        bst.put("tm",1);
+        bst.put("w",2);
+        bst.put("tm",3);
+        bst.put("of",4);
+        bst.put("it",5);
+
+        List lst = bst.get("tm");
+    }
+}
