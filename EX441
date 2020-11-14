@@ -1,0 +1,55 @@
+package a44ST;
+
+//4.4.1 Modify Lookup to make a program LookupAndPut that allows put
+// operations to be specified on standard input. Use the convention that
+// a plus sign indicates
+//        that the next two strings typed are the key–value pair to be
+//        inserted
+
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+
+public class EX441 {
+
+}
+
+// p631
+class LookupAndPut
+{
+    public static void main(String[] args)
+    { // Build dictionary, provide values for keys in StdIn.
+        In in = new In("C:/Users/.../amino.csv");
+        int keyField = 0;//Integer.parseInt(args[1]);
+        int valField = 3;//Integer.parseInt(args[2]);
+        String[] database = in.readAllLines();
+        StdRandom.shuffle(database);
+        
+        ST<String, String> st = new ST<String, String>();
+        String key, val;
+        // Extract key, value from one line and add to ST.
+        for (int i = 0; i < database.length; i++)
+        { 
+            String[] tokens = database[i].split(",");
+            key = tokens[keyField];
+            val = tokens[valField];
+            st.put(key, val);
+        }
+
+        while (!StdIn.isEmpty())
+        { // Read key and provide value.
+            String s = StdIn.readString();
+            if (s.equals("+")) {
+                key = StdIn.readString();
+                val = StdIn.readString();
+                st.put(key, val);
+            }
+            else
+                StdOut.println(st.get(s));
+        }
+    }
+}
+//    This ST client reads key–value pairs from a comma-separated file,
+//        then prints values corresponding to keys on standard input.
+//        Both keys and values are strings.
