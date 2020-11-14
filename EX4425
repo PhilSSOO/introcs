@@ -1,0 +1,69 @@
+package a44ST;
+//4.4.25 A concordance is an alphabetical list of the words in a text
+// that gives all word
+//        positions where each word appears. Thus, java Index 0 0
+//        produces a concordance. In a famous incident, one group of
+//        researchers tried to establish credibility
+//        while keeping details of the Dead Sea Scrolls secret from
+//        others by making public
+//a concordance. Write a program InvertConcordance that takes a
+// command-line
+//        argument n, reads a concordance from standard input, and
+//        prints the first n words
+//        of the corresponding text on standard output
+
+import edu.princeton.cs.algs4.*;
+
+public class EX4425 {
+
+}
+// p633
+class IIIndex {
+    private ST<String, Queue<Integer>> st;
+    public void invertConcordance(int n) {
+        Queue<Integer> queue;
+        for (int i = 0; i < n; i++) {
+            for (String s : st)
+            {
+                queue = st.get(s);
+                if (!queue.isEmpty() && queue.peek() == i) {
+                    queue.dequeue();
+                    System.out.print(s + " ");
+                    break;
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        IIIndex iii = new IIIndex();
+        String fileLoc = "C:/Users/.../Pamir.txt";
+        // create ST from input file
+        iii.concordance(fileLoc);
+        int n = 15;
+        // print out first n words
+        iii.invertConcordance(n);
+    }
+
+    public void concordance(String fileLoc)
+    {
+        In in = new In(fileLoc);
+        String[] database = in.readAllStrings();
+// Create and initialize the symbol table.
+        st = new ST<String, Queue<Integer>>();
+        String word;
+        Queue<Integer> queue;
+        for (int i = 0; i < database.length; i++)
+        {
+            word = database[i];
+            if (!st.contains(word))
+                st.put(word, new Queue<Integer>());
+            queue = st.get(word);
+            queue.enqueue(i);
+            st.put(word, queue);
+        }
+    }
+}
+//    This ST client indexes a text file by word position. Keys are
+//    words, and values are queues of positions where the word occurs
+//    in the file.
