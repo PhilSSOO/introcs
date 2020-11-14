@@ -1,0 +1,100 @@
+
+//4.4.24 Modify HashST to implement the SET API given at the end of
+// this section   (remover the Comparable restriction from the API)
+public class EX4424 {
+}
+
+//modifying Program 4.4.3 Hash table
+class SSET<Key> {
+    private int m = 2;//1024;
+    // private Node[] lists;// = new Node[m]; not wkg bc of generic 
+    private Object[] lists = new Object[m];
+    private int n = 0;
+
+    private class Node {
+        private Object key;
+        private Node next;
+
+        public Node(Object key, Node next) {
+            this.key = key;
+            this.next = next;
+        }
+    }
+
+    private int hash(Key key) {
+        return Math.abs(key.hashCode() % m);
+    }
+
+    public boolean isEmpty() {
+        return n == 0;
+    }
+
+    public void add(Key key) {
+        int i = hash(key);
+        for (Node x = (Node) lists[i]; x != null; x = x.next) {
+            if (key.equals(x.key)) {
+                return;
+            }
+        }
+        lists[i] = new Node(key, (Node) lists[i]);
+        n++;
+    }
+
+    public boolean contains(Key key) {
+        int i = hash(key);
+        for (Node x = (Node) lists[i]; x != null; x = x.next) {
+            if (key.equals(x.key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void remove(Key key) {
+        boolean removed = false;
+        int i = hash(key);
+        Node prv = (Node) lists[i];
+        Node x;
+
+        for (x = (Node) lists[i]; x != null; x = x.next) {
+            //key is first
+            if (key.equals(prv.key))
+            {
+                lists[i] = prv.next;
+                removed = true;
+                break;
+            }
+            // key is not fst
+            if (key.equals(x.key))
+            {
+                prv.next = x.next;
+                removed = true;
+                break;
+            }
+            prv = x;
+        }
+        if (removed)
+            n--;
+        else
+            System.out.println("key not in the set ");
+    }
+
+    public int size() {
+        return n;
+    }
+
+    public static void main(String[] args) {
+        SSET set = new SSET();
+        set.add(1);
+        set.add(2);
+        set.add(1);
+        set.add(3);
+        set.add(4);
+        set.add(5);
+        set.add(6);
+        set.remove(1);
+        set.remove(5);
+        set.remove(1);
+        int sz = set.size();
+    }
+}
