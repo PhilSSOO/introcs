@@ -1,0 +1,52 @@
+package a44ST;
+
+//4.4.2 Modify Lookup to make a program LookupMultiple that handles
+// multiple
+//        values having the same key by storing all such values in a
+//        queue, as in Index, and
+//        then printing them all on a get request, as follows:
+//        % java LookupMultiple amino.csv 3 0
+//        Leucine
+//        TTA TTG CTT CTC CTA CTG
+
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.StdIn;
+
+public class EX442 {
+}
+
+// p631 mdfd
+class LookupMultiple
+{
+    public static void main(String[] args)
+    {
+        ST st = new ST();
+        Queue<String> qu;
+        String key;
+        String value;
+
+        while (!StdIn.isEmpty())
+        {
+            key = StdIn.readString();
+            // input a signal for getting a key and print its num of values
+            if (key.equals("findNumValuesForFollowingKey")) {
+                key = StdIn.readString();
+                qu = (Queue<String>) st.get(key);
+                System.out.println(qu.size());
+            }
+
+            else if (!st.contains(key)) {
+                qu = new Queue<>();
+                value = StdIn.readString();
+                qu.enqueue(value);
+                st.put(key, qu);
+            }
+            else {// st.contains(xx)
+                qu = (Queue<String>) st.get(key);
+                value = StdIn.readString();
+                qu.enqueue(value);
+            }
+        }
+    }
+}
+
