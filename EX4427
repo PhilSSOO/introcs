@@ -1,0 +1,91 @@
+package a44ST;
+//4.4.27 Modify BST to add methods min() and max() that return the
+// smallest (or
+//        largest) key in the table (or null if no such key exists).
+
+import edu.princeton.cs.algs4.Queue;
+
+//Program 4.4.4 Binary search tree, BST here is EX4427
+class EX4427<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private Node prv;
+    private class Node
+    {
+        Key key;
+        Value val;
+        int nNDSinSubtree;
+        Node left, right;
+        Node(Key key, Value val)
+        {
+            this.key = key;
+            this.val = val;
+           // nNDSinSubtree = 0;
+        }
+    }
+
+    public Key min()
+    {
+        if (root == null)
+            return null;
+        Node prv = root;
+        Node nd = root;
+        while (nd != null) {
+            prv = nd;
+            nd = nd.left;
+        }
+        return prv.key;
+    }
+
+    public Key max()
+    {
+        if (root == null)
+            return null;
+        Node prv = root;
+        Node nd = root;
+        while (nd != null) {
+            prv = nd;
+            nd = nd.right;
+        }
+        return prv.key;
+    }
+
+    public Value get(Key key)
+    { return get(root, key); }
+
+    private Value get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+
+    public void put(Key key, Value val)
+    { root = put(root, key, val); }
+    
+    private Node put(Node x, Key key, Value val)
+    {
+      if (x == null) return new Node(key, val);
+      int cmp = key.compareTo(x.key);
+      if (cmp < 0) x.left = put(x.left, key, val);
+      else if (cmp > 0) x.right = put(x.right, key, val);
+      else x.val = val;
+      return x;
+    }
+
+    public static void main(String[] args) {
+        EX4427 ex4427 = new EX4427();
+        ex4427.put("f", 1);
+        ex4427.put("b", 2);
+        ex4427.put("d", 0);
+        ex4427.put("j", 11);
+        ex4427.put("h", 0);
+        ex4427.put("l", 11);
+
+        String min = (String) ex4427.min();
+    }
+}
+//    This implementation of the symbol-table data type is centered on the recursive BST data structure and recursive methods for traversing it. We defer implementations of contains(), size(),
+//        and remove() to ExErcisE 4.4.18–20. We implement keys() at the end of this section
