@@ -1,0 +1,76 @@
+package a44ST;
+//    4.4.29 Modify BST to add a method size() that returns the number
+//    of key–value
+//    pairs in the symbol table. Use the approach of storing within
+//    each Node the number
+//    of nodes in the subtree rooted there.
+
+class EX4429<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private class Node
+    {
+        Key key;
+        Value val;
+        int nNODESinSubtree;
+        Node left, right;
+        Node(Key key, Value val)
+        {
+            this.key = key;
+            this.val = val;
+            nNODESinSubtree = 0;
+        }
+    }
+
+    public int size(Node xx)
+    {
+        return xx.nNODESinSubtree+1;
+    }
+
+    public Value get(Key key)
+    { return get(root, key); }
+
+    private Value get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+
+    public void put(Key key, Value val)
+    { root = put(root, key, val); }
+
+    private Node put(Node x, Key key, Value val)
+    {
+        if (x == null) {
+            Node node = new Node(key, val);
+            return node;
+        }
+        // when we get here, x != null
+        x.nNODESinSubtree++;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) {
+            x.left = put(x.left, key, val);
+        }
+        else if (cmp > 0) {
+            x.right = put(x.right, key, val);
+        }
+        else x.val = val;
+        return x;
+    }
+
+    public static void main(String[] args) {
+        EX4429 ex4429 = new EX4429();
+        // value doesnt matter
+        ex4429.put("f", 1);
+        ex4429.put("b", 2);
+        ex4429.put("d", 0);
+        ex4429.put("j", 11);
+        ex4429.put("h", 0);
+        ex4429.put("l", 11);
+
+        int sz = ex4429.size(ex4429.root);
+    }
+}
