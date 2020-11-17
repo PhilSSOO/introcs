@@ -19,17 +19,20 @@ package a44ST;
 public class EX4433 {
 }
 
-//modified from Program 4.4.4 Binary search tree, 
+//Program 4.4.4 Binary search tree
 class BT<Key extends Comparable<Key>, Double>
 {
     private Node root;
     private class Node
     {
-        Double key;
-//        Double val;
+        Key key;
+        Double val;
         Node left, right;
-        Node(Double key)//, Double val)
-        { this.key = key;}
+        Node(Key key, Double val)
+        {
+            this.key = key;
+            this.val = val;
+        }
     }
 
     public int size(Node nd) {
@@ -54,42 +57,36 @@ class BT<Key extends Comparable<Key>, Double>
     }
 
     public double total(Node x) {
-        double sum = inorderAccessKeyDouble(x);
+        double sum = inorderAccessNodeValue(x);
         return sum;
     }
 
-    private double inorderAccessKeyDouble(Node x)
+    private double inorderAccessNodeValue(Node x)
     {
-        if (x == null) return 0;
-        return inorderAccessKeyDouble(x.left) + (double)x.key + inorderCountLeaves(x.right);
+        if (x == null) return 0.0;
+        return inorderAccessNodeValue(x.left) + (double)x.val + inorderAccessNodeValue(x.right);
     }
 
-    public void put(Double key)//, Double val)
-    { root = put(root, key); } // , val
-    
-    private Node put(Node x, Double key)//, Double val)
+    public void put(Key key, Double val)
+    { root = put(root, key, val);}
+    private Node put(Node x, Key key, Double val)
     {
         if (x == null) {
-            return new Node(key);
+            return new Node(key, val);
         }
-        double cmp = (double)key-(double)x.key;
-        if (cmp < 0) x.left = put(x.left, key);//, val);
-        else if (cmp > 0) x.right = put(x.right, key);//, val);
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
         return x;
     }
 
     public static void main(String[] args) {
         BT bbst = new BT();
-        bbst.put(1.5);
-        bbst.put(2.0);
-        bbst.put(3.0);
-        bbst.put(1.0);
+        bbst.put(1.5, 111.0);
+        bbst.put(2.0, 113.0);
+        bbst.put(3.0, 115.0);
+        bbst.put(1.0, 117.0);
 
         double sz = bbst.total(bbst.root);
     }
 }
-//    This implementation of the symbol-table data type is centered on
-//    the recursive BST data structure and recursive methods for
-//    traversing it. We defer implementations of contains(), size(),
-//        and remove() to ExErcisE 4.4.18–20. We implement keys()
-//        at the end of this section.
