@@ -1,0 +1,95 @@
+package a44ST;
+//These exercises are intended to give you experience in working with
+// binary trees that
+//        are not necessarily BSTs. They all assume a Node class with
+//        three instance variables:
+//        a positive double value and two Node references. As with
+//        linked lists, you will find it
+//        helpful to make drawings using the visual representation
+//        shown in the text.
+
+//        4.4.33 Implement the following methods, each of which takes
+//        as its argument a
+//        Node that is the root of a binary tree.
+//        int size() number of nodes in the tree
+//        int leaves() number of nodes whose links are both null
+//        double total() sum of the key values in all nodes
+//        Your methods should all run in linear time.
+
+public class EX4433 {
+}
+
+//modified from Program 4.4.4 Binary search tree, 
+class BT<Key extends Comparable<Key>, Double>
+{
+    private Node root;
+    private class Node
+    {
+        Double key;
+//        Double val;
+        Node left, right;
+        Node(Double key)//, Double val)
+        { this.key = key;}
+    }
+
+    public int size(Node nd) {
+        return inorderSIZE(nd);
+    }
+
+    private int inorderSIZE(Node x)
+    {
+        if (x == null) return 0;
+        return inorderSIZE(x.left) + 1 + inorderSIZE(x.right);
+    }
+
+    public int leaves(Node x) {
+        return inorderCountLeaves(x);
+    }
+
+    private int inorderCountLeaves(Node x)
+    {
+        if (x == null) return 0;
+        if (x.left == null && x.right == null) return 1;
+        return inorderCountLeaves(x.left) + inorderCountLeaves(x.right);
+    }
+
+    public double total(Node x) {
+        double sum = inorderAccessKeyDouble(x);
+        return sum;
+    }
+
+    private double inorderAccessKeyDouble(Node x)
+    {
+        if (x == null) return 0;
+        return inorderAccessKeyDouble(x.left) + (double)x.key + inorderCountLeaves(x.right);
+    }
+
+    public void put(Double key)//, Double val)
+    { root = put(root, key); } // , val
+    
+    private Node put(Node x, Double key)//, Double val)
+    {
+        if (x == null) {
+            return new Node(key);
+        }
+        double cmp = (double)key-(double)x.key;
+        if (cmp < 0) x.left = put(x.left, key);//, val);
+        else if (cmp > 0) x.right = put(x.right, key);//, val);
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BT bbst = new BT();
+        bbst.put(1.5);
+        bbst.put(2.0);
+        bbst.put(3.0);
+        bbst.put(1.0);
+
+        double sz = bbst.total(bbst.root);
+    }
+}
+//    This implementation of the symbol-table data type is centered on
+//    the recursive BST data structure and recursive methods for
+//    traversing it. We defer implementations of contains(), size(),
+//        and remove() to ExErcisE 4.4.18–20. We implement keys()
+//        at the end of this section.
