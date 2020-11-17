@@ -82,7 +82,7 @@ class BT<Key extends Comparable<Key>, Double>
 
     public static void main(String[] args) {
         BT bbst = new BT();
-        bbst.put(1.5, 111.0);
+        bbst.put(1.5, 111.0); // cannot input 111 (will be err)
         bbst.put(2.0, 113.0);
         bbst.put(3.0, 115.0);
         bbst.put(1.0, 117.0);
