@@ -1,0 +1,58 @@
+package a44ST;
+//4.4.36 A binary tree is balanced if both its subtrees are balanced and
+// the height of
+//        its two subtrees differ by at most 1. Implement a linear-time
+//        method balanced()
+//        that returns true if the tree is balanced, and false otherwise
+
+public class EX4436 {
+
+}
+
+class BBT<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private class Node
+    {
+        Double key;
+        Node left, right;
+        Node(Double key)
+        { this.key = key;}
+    }
+
+    public void put(Double key)//, Double val)
+    { root = put(root, key); }
+    private Node put(Node x, Double key)//, Double val)
+    {
+        if (x == null) {
+            return new Node(key);
+        }
+        double cmp = (double)key-(double)x.key;
+        if (cmp < 0) x.left = put(x.left, key);
+        else if (cmp > 0) x.right = put(x.right, key);
+        return x;
+    }
+
+    public boolean balanced() {
+        int h1 = height(root.left);
+        int h2 = height(root.right);
+        int dff = h1-h2;
+        return Math.abs(dff) <= 1;
+    }
+
+    public int height(Node x) {
+        if (x == null || (x.left == null && x.right == null))
+            return 0;
+        return Math.max(height(x.left), height(x.right))+1;
+    }
+
+    public static void main(String[] args) {
+        BBT bbst = new BBT();
+        bbst.put(1.5);
+        bbst.put(2.0);
+        bbst.put(3.0);
+        bbst.put(4.0);
+
+        boolean bb = bbst.balanced();
+    }
+}
