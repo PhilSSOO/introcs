@@ -1,0 +1,88 @@
+package a44ST;
+
+public class EX4428_tech {
+    private Node root;
+    // floor is sth small, so we start with a small val
+    private Node floor = new Node(Integer.MIN_VALUE);
+    private Node ceiling = new Node(Integer.MAX_VALUE);
+
+    class Node
+    {
+        int data;
+        Node left, right;
+
+        Node(int data) {
+            this.data = data;
+        }
+    }
+
+    public Node insert(Node node, int key)
+    {
+        // if the root is null, create a new node and return it
+        if (node == null) {
+            return new Node(key);
+        }
+        if (key < node.data) {
+            node.left = insert(node.left, key);
+        }
+        // key >= node.data, ths impl allows for same key be inserted
+        else {
+            node.right = insert(node.right, key);
+        }
+        return node;
+    }
+
+    public Node ceil(Node nd, int key)
+    {
+        // base case
+        if (nd == null) {
+            return nd;
+        }
+        if (key > nd.data)
+        {
+            return ceil(nd.right, key);
+        }
+        else if (key < nd.data)
+        {
+            // update ceiling to current node
+            ceiling = nd;
+            return ceil(nd.left, key);
+        }
+        else // (nd.data == key)
+        {
+            ceiling = nd;
+            return nd;
+        }
+    }
+
+    public Node flo(Node nd, int key)
+    {
+        // base case
+        if (nd == null) {
+            return nd;
+        }
+        // floor is find sth smaller (<= key), so if curr > key
+        // keeping going left
+        if (key < nd.data)
+        {
+            return flo(nd.left, key);
+        }
+        // we are tracing down the tree trying to find the floor of a specified
+        // key. Along the way, every time we are about to go right means
+        // we are sitting on a node smaller than THE key, and this is where floor must be updated
+        else if (key > nd.data)
+        {
+            floor = nd;
+            return flo(nd.right, key);
+        }
+        else // (nd.data == key)
+        {
+            floor = nd;
+            return nd;
+        }
+    }
+}
+
+
+
+
