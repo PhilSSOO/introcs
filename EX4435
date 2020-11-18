@@ -1,0 +1,67 @@
+package a44ST;
+
+//4.4.35 A binary tree is heap ordered if the key at the root is larger
+// than the keys
+//        in all of its descendants. Implement a linear-time method
+//        heapOrdered() that
+//        returns true if the tree is heap ordered, and false otherwise.
+
+public class EX4435 {
+
+
+}
+
+class BBBT<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private boolean rootKeyLargest = true;
+
+    private class Node
+    {
+        Key key;
+        Node left, right;
+        Node(Key key)
+        { this.key = key;}
+    }
+
+    public boolean heapOrdered() {
+        traverse(root);
+        return rootKeyLargest;
+    }
+
+    // p649 modif frm traverse
+    private void traverse(Node x)
+    {
+        if (x == null) return;
+        traverse(x.left);
+        int cmp = x.key.compareTo(root.key);
+        if (cmp > 0) {
+            rootKeyLargest = false;
+            return;
+        }
+        traverse(x.right);
+    }
+
+    public void put(Key key)//, Double val)
+    { root = put(root, key); } // , val
+    private Node put(Node x, Key key)//, Double val)
+    {
+        if (x == null) {
+            return new Node(key);
+        }
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key);//, val);
+        else if (cmp > 0) x.right = put(x.right, key);//, val);
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BBBT bbst = new BBBT();
+        bbst.put(1.5);
+        bbst.put(2.0);
+        bbst.put(3.0);
+        bbst.put(1.0);
+
+        boolean bb = bbst.heapOrdered();
+    }
+}
