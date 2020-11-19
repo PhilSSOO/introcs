@@ -1,0 +1,69 @@
+package a44ST;
+
+import edu.princeton.cs.algs4.Queue;
+
+//4.4.39 Write a method levelOrder() that prints BST keys in level order :
+// first
+//        print the root; then the nodes one level below the root, left to
+//        right; then the nodes
+//        two levels below the root (left to right); and so forth. Hint :
+//        Use a Queue<Node>.
+public class EX4439 {
+}
+
+// frm 4433
+class BBBTTT<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private boolean rootKeyLargest = true;
+
+    private class Node
+    {
+        Key key;
+        Node left, right;
+        Node(Key key)//, Double val)
+        { this.key = key;}
+    }
+    
+    public void print()
+    {
+        Queue<Node> qq = new Queue<>();
+        prEnq(root, qq);
+        while (!qq.isEmpty()) {
+            Node nd = qq.dequeue();
+            prLabelEnq(nd.left, qq);
+            prLabelEnq(nd.right, qq);
+        }
+    }
+
+    private void prEnq(Node nd, Queue<Node> qq)
+    {
+        if (nd == null) return;
+        System.out.print(nd.key + " ");
+        qq.enqueue(nd);
+    }
+
+
+    public void put(Key key)//, Double val)
+    { root = put(root, key); } // , val
+    private Node put(Node x, Key key)//, Double val)
+    {
+        if (x == null) {
+            return new Node(key);
+        }
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key);//, val);
+        else if (cmp > 0) x.right = put(x.right, key);//, val);
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BBBTTT bbst = new BBBTTT();
+        bbst.put(1.5);
+        bbst.put(2.0);
+        bbst.put(3.0);
+        bbst.put(1.0);
+
+        bbst.print();
+    }
+}
