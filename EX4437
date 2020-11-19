@@ -1,0 +1,107 @@
+package a44ST;
+//4.4.37 Two binary trees are isomorphic if only their key values
+// differ (they have
+//        the same shape). Implement a linear-time static method
+//        isomorphic() that takes
+//        two tree references as arguments and returns true if they
+//        refer to isomorphic trees,
+//        and false otherwise. Then, implement a linear-time static
+//        method eq() that takes
+//        two tree references as arguments and returns true if they
+//        refer to identical trees
+//        (isomorphic with the same key values), and false otherwise
+public class EX4437 {
+
+}
+
+// frm 4435
+class BBBBT<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private StringBuilder sb = new StringBuilder();
+    private StringBuilder sbKeys = new StringBuilder();
+
+    private class Node
+    {
+        Key key;
+        Value val;
+        Node left, right;
+        Node(Key key)//, Double val)
+        { this.key = key;}
+    }
+
+    // p649 modif frm traverse
+    private void recordPath(Node x)
+    {
+        if (x == null) return;
+        recordPath(x.left);
+        int cmp = x.key.compareTo(root.key);
+        if (cmp > 0)
+            sb.append('L');
+        else if (cmp == 0)
+            sb.append('E');
+        else
+            sb.append('S');
+        recordPath(x.right);
+    }
+
+    private void recordKeys(Node x)
+    {
+        if (x == null) return;
+        recordKeys(x.left);
+        sbKeys.append(x.key);
+        recordKeys(x.right);
+    }
+    
+    public void put(Key key, Value val)
+    { root = put(root, key, val);}
+
+    public static boolean eq(BBBBT b1, BBBBT b2)
+    {
+        String s1 = b1.sbKeys.toString();
+        String s2 = b2.sbKeys.toString();
+        return s1.equals(s2);
+    }
+
+    public static boolean isomorphic(BBBBT b1, BBBBT b2)
+    {
+        String s1 = b1.sb.toString();
+        String s2 = b2.sb.toString();
+        return s1.equals(s2);
+    }
+
+    private Node put(Node x, Key key, Value val)
+    {
+        if (x == null) {
+            return new Node(key);
+        }
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BBBBT bbst = new BBBBT();
+        bbst.put("b", 111);
+        bbst.put("c", 111);
+        bbst.put("d", 111);
+        bbst.put("a", 111);
+        bbst.recordKeys(bbst.root);
+        System.out.println(bbst.sbKeys.toString());
+
+        BBBBT bbst2 = new BBBBT();
+        bbst2.put("b", 222);
+        bbst2.put("c", 222);
+        bbst2.put("d", 222);
+        bbst2.put("a", 222);
+        bbst2.recordKeys(bbst2.root);
+        System.out.println(bbst2.sbKeys.toString());
+        boolean bb = eq(bbst, bbst2);
+    }
+}
+
+
+
+
+
