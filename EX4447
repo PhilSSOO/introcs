@@ -1,0 +1,77 @@
+package a44ST;
+//4.4.47 Non-overlapping interval search. Given a list of non-overlapping
+// intervals of integers, write a function that takes an integer argument
+// and determines in
+//        which, if any, interval that value lies. For example, if the
+//        intervals are 1643–2033,
+//        5532–7643, 8999–10332, and 5666653–5669321, then the query
+//        point 9122 lies in
+//        the third interval and 8122 lies in no interval
+
+import edu.princeton.cs.algs4.StdIn;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class EX4447<Key extends Comparable<Key>, Value> {
+    private Noode root;
+    private class Noode {
+        Integer key;
+        Integer val;
+        Noode left, right;
+
+        Noode(Integer key, Integer val)
+        {
+            this.key = key;
+            this.val = val; }
+    }
+
+    public void put(Integer key, Integer val)
+    { root = put(root, key, val); }
+    private Noode put(Noode x, Integer key, Integer val)
+    {
+        if (x == null) return new Noode(key, val);
+        Integer cmp = key - x.key;
+        if (cmp < 0) x.left = put(x.left, key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
+        else x.val = val; // ????
+        return x;
+    }
+
+    public void bst(int query) {
+        while (!StdIn.isEmpty()) {
+            Integer key = StdIn.readInt();
+            Integer val = StdIn.readInt();
+            put(key,val);
+        }
+        search(query);
+    }
+
+    public void search(int query) {
+        Noode nd = root;
+        while (nd != null) {
+            int cmp = (int)nd.key - query;
+            int cmp2 = (int)nd.val - query;
+
+            if (cmp == 0 || cmp2 == 0 || (cmp < 0 && cmp2 > 0)) {
+                System.out.println("found");
+                break;
+            }
+            else if (cmp < 0 && cmp2 < 0) {
+                nd = nd.right;
+            }
+            else if (cmp > 0 && cmp2 > 0) {
+                nd = nd.left;
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        EX4447 ex4447 = new EX4447();
+        int query = 9122;
+        ex4447.bst(query);
+    }
+}
+// nums for ST: 1643 2033 5532 7643 8999 10332
+
+// 9122 lies in the third interval and 8122 no
