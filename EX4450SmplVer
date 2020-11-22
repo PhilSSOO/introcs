@@ -1,0 +1,125 @@
+
+//4.4.50 Inverted index of web. Extend the previous exercise so that it
+// supports
+//        multi-word queries. In this case, output the list of web pages
+//        that contain at least
+//        one occurrence of each of the query words
+
+package a44ST;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class EX4450simpl<Key extends Comparable<Key>, Value> {
+    private Nodee root;
+    private boolean fstFoundInApage = true;
+
+    private class Nodee
+    {
+        Key key;
+        List<Value> val;
+        Nodee left, right;
+        Nodee(Key key, Value val)
+        {
+            this.key = key;
+            this.val = new ArrayList<>();
+            this.val.add(val);
+        }
+    }
+
+    public List<Key> queryMulti(Key[] keys, String[][] twoDarr)
+    {
+        List<Key> toRet = new ArrayList<>();
+        for (int i = 0; i < keys.length; i++) {
+            List<Value> list = get(keys[i]);
+            if (list != null && list.size() >= twoDarr.length)
+                toRet.add(keys[i]);
+        }
+        return toRet;
+    }
+
+    public List<Value> get(Key key)
+    { return get(root, key); }
+
+    private List<Value> get(Nodee x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+
+    public void put(Key key, Value val)
+    { root = put(root, key, val); }
+
+    private Nodee put(Nodee x, Key key, Value val)
+    {
+        if (x == null)
+            return new Nodee(key, val);
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
+        else {
+            x.val.add(val);
+        }
+        return x;
+    }
+
+    private boolean isStringAword(String ss) {
+        for (int i = 0; i < ss.length(); i++) {
+            char cc = ss.charAt(i);
+            if (!(cc >= 'a' && cc <= 'z' || cc >= 'A' && cc <= 'Z'))
+                return false;
+        }
+        return true;
+    }
+
+    public boolean contains(Key key)
+    {
+        Nodee curr = root;
+        while (curr != null) {
+            int cmp = key.compareTo(curr.key);
+            if (cmp < 0) { // key < curr
+                curr = curr.left;
+            }
+            else if (cmp > 0) {
+                curr = curr.right;
+            }
+            else return true;
+        }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        EX4450simpl ex4449 = new EX4450simpl();
+        boolean newPage;
+
+        String[][] twoDarr = new String[4][];
+        twoDarr[0] = new String[]{"aa", "bb", "cc", "xx"};
+        twoDarr[1] = new String[]{"aa", "xx", "cc", "bb", "rr","aa"};
+        twoDarr[2] = new String[]{"aa", "ff", "cc", "bb", "xx", "bb"};
+        twoDarr[3] = new String[]{"aa", "tt", "cc", "bb", "xx", "bb", "oo"};
+
+
+        for (int i = 0; i < twoDarr.length; i++) {
+            newPage = true;
+            ex4449.fstFoundInApage = true;
+            for (int ii = 0; ii < twoDarr[i].length; ii++) {
+                String word = twoDarr[i][ii];
+                if ((ex4449.isStringAword(word) &&
+                        (!ex4449.contains(word) || newPage) || ex4449.fstFoundInApage)) {
+                    ex4449.put(word, i);
+                    newPage = false;
+                }
+            }
+        }
+        List<String> list = ex4449.get("rr");
+        List<String> ll = ex4449.queryMulti(new String[]{"aa",
+                "bb", "cc", "rr", "ff", "xx", "zz"}, twoDarr);
+        System.out.println();
+    }
+}
+
+
+
