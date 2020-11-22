@@ -1,0 +1,108 @@
+package a44ST;
+//4.4.48 IP lookup by country. Write a BST client that uses the data file
+// ip-tocountry.csv found on the booksite to determine the source country
+// of a given
+//        IP address. The data file has five fields: beginning of IP
+//        address range, end of IP
+//        address range, two-character country code, three-character
+//        country code, and
+//        country name. The IP addresses are non-overlapping. Such a
+//        database tool can be
+//        used for credit card fraud detection, spam filtering,
+//        auto-selection of language on a
+//        website, and web-server log analysis
+
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdRandom;
+
+public class EX4448 {
+
+}
+
+class BbST<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private class Node
+    {
+        Key key;
+        Value val;
+        Node left, right;
+        Node(Key key, Value val)
+        { this.key = key; this.val = val; }
+    }
+    
+    public Value get(Key key)
+    { return get(root, key); }
+
+    private Value get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = cmp(key, x);
+        if (ipInRange(x, key))
+            return x.val;
+        else if (cmp < 0) return get(x.left, key);
+        else
+            return get(x.right, key);
+    }
+    
+    private boolean ipInRange(Node nd, Key query) {
+        int len = ((String)nd.key).length();
+        int cmp = cmp(query, nd);
+        // foll can be imprv via cmp(...)
+        int cmp2 = ((String)query).
+                compareTo(((String)nd.key).substring(len/2));
+        if (cmp == 0 || cmp2 == 0 || (cmp > 0 && cmp2 < 0)) {
+            System.out.println("found " + nd.val);
+            return true;
+        }
+        return false;
+    }
+    
+    private int cmp(Key key, Node node2) {
+        int len = ((String)node2.key).length();
+        int keyToInt = Integer.parseInt(((String)key).substring(0,len/2));
+        int ndKeyToInt = Integer.parseInt(((String)node2.key).substring(0,len/2));
+        return keyToInt - ndKeyToInt;
+    }
+
+    public void put(Key key, Value val)
+    { root = put(root, key, val); }
+
+    private Node put(Node x, Key key, Value val)
+    {
+        if (x == null) return new Node(key, val);
+        int cmp = cmp(key, x);
+        if (cmp < 0) x.left = put(x.left, key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
+        else x.val = val;
+        return x;
+    }
+    public static void main(String[] args) {
+        BbST bst = new BbST();
+        // original source https://raw.githubusercontent.com/webeng/Ip2Country/master/IpToCountry.csv
+        // changed frm 10 digits to 4 di
+        // there is issue with 10 (or 20?) char strings
+        In in = new In("C:/Users/yqson/Documents/Java Princeton/introcs-data/ex4448IPsyq1.csv");
+
+        int keyAddrStart = 0; // ths is the way .csv was built
+        int keyAddrEnd = 1;
+        int valField = 4;
+        
+        String[] database = in.readAllLines();
+        // rand to mk sure we are building a balanced tree
+        StdRandom.shuffle(database);
+        
+        for (int i = 0; i < database.length; i++)
+        { // Extract key, value from one line and add to ST.
+            String[] tokens = database[i].split(",");
+            // key is a concatenation of keyAddrStart and keyAddrEnd (each has to be stripped of " and ", for ex, "3355493376" to 3355493376)
+            String key = tokens[keyAddrStart].substring(1,tokens[keyAddrStart].length()-1)+
+                    tokens[keyAddrEnd].substring(1,tokens[keyAddrEnd].length()-1);
+            String val = tokens[valField].substring(1,tokens[valField].length()-1);
+            bst.put(key, val);
+        }
+      //  String ip = "3355494910";
+        String ip1 = "3350";
+        String bb = (String)bst.get(bst.root, ip1);
+    }
+}
