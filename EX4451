@@ -92,7 +92,8 @@ class BSTBST<Key extends Comparable<Key>, Value>
         while (!StdIn.isEmpty()) {
             String word = StdIn.readString();
             list.add(word);
-            bstbst.put(word);
+            if (bstbst.wdAmongQuery(word,query) >= 0) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                bstbst.put(word);
         }
         int start = 0;
         int end = 0;
