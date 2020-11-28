@@ -1,0 +1,104 @@
+package a44ST;
+//4.4.55 Order statistics. Add to BST a method select() that takes
+// an integer argument k and returns the kth smallest key in the
+// BST. Maintain subtree sizes in each
+//        node (see exercise 4.4.29). The running time should be
+//        proportional to the height
+//        of the tree.
+public class EX4455 {
+}
+
+//Program 4.4.4 Binary search tree
+class BST55<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private int count = 0;
+    private class Node
+    {
+        Key key;
+        Value val;
+        int nNODESinLeftSubtree;
+        Node left, right;
+        Node(Key key, Value val)
+        {
+            this.key = key;
+            this.val = val;
+            nNODESinLeftSubtree = 1;
+        }
+    }
+
+    // https://stackoverflow.com/questions/2329171/find-kth-smallest-element-in-a-binary-search-tree-in-optimum-way
+// If k is smaller than the number of elements in the left subtree,
+// the kth smallest element must belong to the left subtree
+
+    public void select(int k)
+    {
+        select(k, root);
+    }
+
+    private void select(int k, Node nd)//, int count)
+    {
+        if (nd == null) {
+            return;
+        }
+        if (nd.nNODESinLeftSubtree > k) {
+            select(k, nd.left);
+        }
+        else if (nd.nNODESinLeftSubtree == k) {
+            System.out.println("kth is " + nd.key);
+            return;
+        }
+        else {// nd.nNODESinLeftSubtree < k
+            select(k - nd.nNODESinLeftSubtree, nd.right);
+        }
+    }
+
+    public Value get(Key key)
+    { return get(root, key); }
+    private Value get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+    public void put(Key key, Value val)
+    { root = put(root, key, val); }
+
+    private Node put(Node x, Key key, Value val)
+    {
+        if (x == null) { // only get called when root is null
+            Node node = new Node(key, val);
+            return node;
+        }
+        // when we get here, x != null
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) {
+            x.nNODESinLeftSubtree++;
+            x.left = put(x.left, key, val);
+        }
+        else if (cmp > 0) {
+            x.right = put(x.right, key, val);
+        }
+        else x.val = val;
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BST55 bst55 = new BST55();
+        bst55.put("j", 11);
+        bst55.put("f", 11);
+        bst55.put("p", 11);
+        bst55.put("w", 11);
+        bst55.put("b", 11);
+        bst55.put("e", 11);
+
+        bst55.put("l", 11);
+        bst55.put("m", 11);
+        bst55.put("n", 11);
+        bst55.put("o", 11);
+        int k = 10;
+        bst55.select(k);
+    }
+}
