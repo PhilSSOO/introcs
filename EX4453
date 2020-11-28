@@ -1,0 +1,80 @@
+package a44ST;
+
+import java.util.HashSet;
+import java.util.Set;
+
+//4.4.53 Registrar scheduling. The registrar at a prominent
+// northeastern university
+//        recently scheduled an instructor to teach two
+//        different classes at the same exact
+//        time. Help the registrar prevent future mistakes by
+//        describing a method to check
+//        for such conflicts. For simplicity, assume all classes
+//        run for 50 minutes and start at
+//        9, 10, 11, 1, 2, or 3
+public class EX4453 {
+
+}
+
+
+//Program 4.4.4 Binary search tree
+class BST53<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private class Node
+    {
+        Key key; // teacher
+        Value value;
+        Node left, right;
+        Node(Key key, int val)
+        {
+            this.key = key;
+            Set set = new HashSet();
+            set.add(val);
+            this.value = (Value)set;
+        }
+    }
+
+    public Value get(Key key)
+    { return get(root, key); }
+    private Value get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else {
+                return x.value;
+        }
+    }
+    public void put(Key key, int val) throws Exception { root = put(root, key, val); }
+    private Node put(Node x, Key key, int val) throws Exception {
+        if (x == null) return new Node(key,val);
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
+        else {
+           // chk for hrs already assigned to the teacher
+            // if val is NOT among those, add it to the list
+            // (if we are using a list)
+            // othws, print out info alarming for a correct input
+            // see EX4449si.....
+            HashSet hs = (HashSet)get(x.key);
+            if (hs.contains(val)) {
+                throw new Exception("cannot assign");
+            }
+            hs.add(val);
+            x.value = (Value)hs;
+        }
+        return x;
+    }
+
+    public static void main(String[] args) throws Exception {
+        BST53 bst53 = new BST53();
+        bst53.put("a", 9);
+        bst53.put("a1", 9);
+        bst53.put("a", 9);
+        bst53.put("a2", 9);
+        System.out.println();
+    }
+}
