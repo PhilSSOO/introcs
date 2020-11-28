@@ -1,0 +1,113 @@
+package a44ST;
+
+import edu.princeton.cs.algs4.StdRandom;
+
+//4.4.54 Random element. Add to BST a method random() that returns
+// a random
+//        key. Maintain subtree sizes in each node (see exercise
+//        4.4.29). The running time
+//        should be proportional to the height of the tree
+public class EX4454 {
+}
+
+//mdfd frm BST55
+class BST54<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private int n = 0; // num of nodes
+
+    private class Node
+    {
+        Key key;
+        Value val;
+        int nNODESinLeftSubtree;
+        Node left, right;
+        Node(Key key, Value val)
+        {
+            this.key = key;
+            this.val = val;
+            nNODESinLeftSubtree = 1;
+        }
+    }
+
+    public Key random()
+    {
+        int xx = StdRandom.uniform(n)+1;
+      //  System.out.println("xx " + xx);
+
+        return select(xx);
+    }
+
+    public Key select(int k)
+    {
+        return select(k, root);
+    }
+
+    private Key select(int k, Node nd)
+    {
+        if (nd == null) {
+            return null;
+        }
+        if (nd.nNODESinLeftSubtree > k) {
+            System.out.println("in left of " + nd.key);
+            return select(k, nd.left);
+        }
+        else if (nd.nNODESinLeftSubtree == k) {
+            System.out.println("kth is " + nd.key);
+            return nd.key;
+        }
+        else {// nd.nNODESinLeftSubtree < k
+            return select(k - nd.nNODESinLeftSubtree, nd.right);
+        }
+    }
+
+    public Value get(Key key)
+    { return get(root, key); }
+    private Value get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+    public void put(Key key, Value val)
+    { root = put(root, key, val); }
+
+    private Node put(Node x, Key key, Value val)
+    {
+        if (x == null) { // only get called when root is null
+            Node node = new Node(key, val);
+            n++;
+            return node;
+        }
+        // when we get here, x != null
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) {
+            x.nNODESinLeftSubtree++;
+            x.left = put(x.left, key, val);
+        }
+        else if (cmp > 0) {
+            x.right = put(x.right, key, val);
+        }
+        else x.val = val;
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BST54 bst55 = new BST54();
+        bst55.put("j", 11);
+        bst55.put("f", 11);
+        bst55.put("p", 11);
+        bst55.put("w", 11);
+        bst55.put("b", 11);
+        bst55.put("e", 11);
+        bst55.put("l", 11);
+        bst55.put("m", 11);
+        bst55.put("n", 11);
+        bst55.put("o", 11);
+
+        String dd = (String)bst55.random();
+        System.out.println();
+    }
+}
