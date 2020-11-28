@@ -1,0 +1,101 @@
+package a44ST;
+
+//4.4.56 Rank query. Add to BST a method rank() that takes a key as an
+// argument
+//        and returns the number of keys in the BST that are strictly
+//        smaller than key. Maintain subtree sizes in each node (see
+//        exercise 4.4.29). The running time should be
+//        proportional to the height of the tree
+
+public class EX4456 {
+}
+
+//mdfd frm BST55
+class BST56<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private class Node
+    {
+        Key key;
+        Value val;
+        int nNODESinLeftSubtree;
+        Node left, right;
+        Node(Key key, Value val)
+        {
+            this.key = key;
+            this.val = val;
+            nNODESinLeftSubtree = 1;
+        }
+    }
+
+    public int rank(Key key)
+    {
+        return rank(key, root);
+    }
+
+    private int rank(Key key, Node x)
+    {
+        if (x == null) {
+            return 0;
+        }
+// when we get here, x != null
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) {
+            return rank(key, x.left);
+        }
+        else if (cmp > 0) {
+            return x.nNODESinLeftSubtree + rank(key, x.right);
+
+        }
+        else // cmp == 0
+            return x.nNODESinLeftSubtree-1;
+    }
+
+    public Value get(Key key)
+    { return get(root, key); }
+    private Value get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+    public void put(Key key, Value val)
+    { root = put(root, key, val); }
+
+    private Node put(Node x, Key key, Value val)
+    {
+        if (x == null) { // only get called when root is null
+            Node node = new Node(key, val);
+            return node;
+        }
+        // when we get here, x != null
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) {
+            x.nNODESinLeftSubtree++;
+            x.left = put(x.left, key, val);
+        }
+        else if (cmp > 0) {
+            x.right = put(x.right, key, val);
+        }
+        else x.val = val;
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BST56 bst55 = new BST56();
+        bst55.put("j", 11);
+        bst55.put("f", 11);
+        bst55.put("p", 11);
+        bst55.put("w", 11);
+        bst55.put("b", 11);
+        bst55.put("e", 11);
+
+        bst55.put("l", 11);
+        bst55.put("m", 11);
+        bst55.put("n", 11);
+        bst55.put("o", 11);
+        int dd = bst55.rank("m");
+    }
+}
