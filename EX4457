@@ -1,0 +1,176 @@
+package a44ST;
+//4.4.57 Generalized queue. Implement a class that supports the following
+// API,
+//        which generalizes both a queue and a stack by supporting
+//        removal of the ith least
+//        recently inserted item (see exercise 4.3.40):
+//public class GeneralizedQueue<Item>
+//GeneralizedQueue() create an empty generalized queue
+//        boolean isEmpty() is the generalized queue empty?
+//        void add(Item item) insert item into the generalized queue
+//        Item remove(int i) remove and return the ith least recently
+//        inserted item
+//        int size() number of items in the queue
+//        API for a generic generalized queue
+//Use a BST that associates the kth item inserted into the data structure
+// with the key
+//        k and maintains in each node the total number of nodes in
+//        the subtree rooted at
+//        that node. To find the ith least recently inserted item, search
+//        for the ith smallest
+//        key in the BST
+
+import edu.princeton.cs.algs4.Queue;
+
+import java.util.Collection;
+import java.util.Iterator;
+
+//GeneralizedQueue<Item>
+public class EX4457<Key extends Comparable<Key>> {
+    private BST57<Key, Integer> bst57;
+    private int n;
+
+    public EX4457() {
+        n = 0;
+        bst57 = new BST57();
+    }
+
+    public boolean isEmpty() {
+        return n == 0;
+    }
+
+    public void add(Key item) {
+        n++;
+        bst57.put(item, n);
+    }
+
+    //remove and return the ith least recently    inserted item
+    public Key remove(int i) {
+        return bst57.select(i);
+    }
+    // number of items in the queue
+    public int size() {
+        return n;
+    }
+
+    public static void main(String[] args) {
+        EX4457 ex4457 = new EX4457();
+        ex4457.add(9);
+        ex4457.add(4);
+        ex4457.add(1);
+        ex4457.add(7);
+        ex4457.add(0);
+        ex4457.add(3);
+        ex4457.add(8);
+        ex4457.add(6);
+        int dd = (int)ex4457.remove(5);
+
+    }
+}
+
+//Program 4.4.4 Binary search tree
+class BST57<Key extends Comparable<Key>, Integer>
+{
+    private Node root;
+    private Node prv;
+
+    private class Node
+    {
+        Key key;
+        Integer val;
+        int nNODESinLeftSubtree;// nNODESinSubtree
+        Node left, right;
+        Node(Key key, Integer val)
+        {
+            this.key = key;
+            this.val = val;
+            nNODESinLeftSubtree = 1;
+        }
+    }
+    // need imprv to keep just 1 if
+    private void deleteNodeLinkKids(Node prv, Node nd) {
+        // nd is left
+        if (prv.left == nd) {
+            // link prv to nd.right then nd.left
+            if (nd.right != null) {// no matter nd.left != null or == null) {
+                prv.left = nd.right;
+                nd.right.left = nd.left;
+            }
+            else if (nd.right == null) {
+                prv.left = nd.left;
+            }
+        }
+        // nd is prv's right
+        if (prv.right == nd) {
+            // link prv to nd.left then nd.right
+            if (nd.left != null) {
+                prv.right = nd.left;
+                nd.right.right = nd.right;
+            }
+            else if (nd.left == null) {
+                prv.right = nd.right;
+            }
+        }
+    }
+
+    // frm ex4455, mdfd frm void to Key
+    public Key select(int k)
+    {
+        return select(k, root);
+    }
+
+    private Key select(int k, Node nd)//, int count)//, Queue<Key> queue)
+    {
+        if (nd == null) {
+            return null;
+        }
+// If k is smaller than the number of elements in the left subtree,
+// the kth smallest element must belong to the left subtree
+        if (nd.nNODESinLeftSubtree > k) {
+            System.out.println("in left of " + nd.key);
+            prv = nd;
+            return select(k, nd.left);
+        }
+        else if (nd.nNODESinLeftSubtree == k) {
+            System.out.println("kth is " + nd.key);
+            deleteNodeLinkKids(prv, nd);
+            return nd.key;
+        }
+        else {// nd.nNODESinLeftSubtree < k
+            return select(k - nd.nNODESinLeftSubtree, nd.right);
+        }
+    }
+
+    public Integer get(Key key)
+    { return get(root, key); }
+
+    private Integer get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+
+    public void put(Key key, Integer val)
+    { root = put(root, key, val); }
+
+    private Node put(Node x, Key key, Integer val)
+    {
+        if (x == null) { // only get called when root is null
+            Node node = new Node(key, val);
+            return node;
+        }
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) {
+            x.nNODESinLeftSubtree++;
+            x.left = put(x.left, key, val);
+        }
+        else if (cmp > 0) {
+            x.right = put(x.right, key, val);
+        }
+        else x.val = val;
+        return x;
+    }
+}
