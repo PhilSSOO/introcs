@@ -89,6 +89,8 @@ class BST57<Key extends Comparable<Key>, Integer>
     }
     // need imprv to keep just 1 if
     private void deleteNodeLinkKids(Node prv, Node nd) {
+        if (prv == null)
+            return;
         // nd is left
         if (prv.left == nd) {
             // link prv to nd.right then nd.left
