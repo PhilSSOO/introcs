@@ -129,12 +129,12 @@ class BST57<Key extends Comparable<Key>, Integer>
 // If k is smaller than the number of elements in the left subtree,
 // the kth smallest element must belong to the left subtree
         if (nd.nNODESinLeftSubtree > k) {
-            System.out.println("in left of " + nd.key);
+          //  System.out.println("in left of " + nd.key);
             prv = nd;
             return select(k, nd.left);
         }
         else if (nd.nNODESinLeftSubtree == k) {
-            System.out.println("kth is " + nd.key);
+          //  System.out.println("kth is " + nd.key);
             deleteNodeLinkKids(prv, nd);
             return nd.key;
         }
