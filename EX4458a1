@@ -1,0 +1,150 @@
+package a44ST;
+//4.4.58 Sparse vectors. A d-dimensional vector is sparse if its number
+// of nonzero
+//        values is small. Your goal is to represent a vector with space
+//        proportional to its
+//        number of nonzeros, and to be able to add two sparse vectors
+//        in time proportional
+//        to the total number of nonzeros. Implement a class that supports
+//        the following API:
+//public class SparseVector
+//SparseVector() create a vector
+//        void put(int i, double v) set ai to v
+//        double get(int i) return ai
+//        double dot(SparseVector b) vector dot product
+//        SparseVector plus(SparseVector b) vector addition
+//        API for a sparse vector of double values
+
+import java.util.LinkedList;
+
+public class EX4458a {
+    private final int d;
+    private final double[] coords;
+    private double[] a;
+
+    private LinkedList<Double[]> linkedList;
+
+ /*   public EX4458a(int dimen)
+    { // Make a defensive copy to ensure immutability.
+        d = dimen;
+        coords = new double[d];
+        a = new double[d];
+        linkedList = new LinkedList<>();
+    }
+ */
+    public EX4458a(double[] vComponents)
+    { // Make a defensive copy to ensure immutability.
+        d = vComponents.length;
+        coords = new double[d];
+        a = new double[d];
+        linkedList = new LinkedList<>();
+        for (int i = 0; i < d; i++) {
+            coords[i] = vComponents[i];
+            a[i] = vComponents[i];
+
+            if (vComponents[i] != 0) {
+                linkedList.add(new Double[]{(double)i,vComponents[i]});
+            }
+        }
+    }
+    
+    public void put(int i, double v) // set asubi to v
+    {
+        a[i] = v;
+    }
+
+    public double get(int i) {
+        return a[i];
+    }
+
+    public double[] plus(EX4458a b) {
+        double[] rr = new double[d];
+        LinkedList<Double[]> linkedList1 = linkedList;
+        LinkedList<Double[]> linkedList2 = b.linkedList;
+        int sz1 = linkedList1.size();
+        int sz2 = linkedList2.size();
+
+        double thisNonZeroIndex = 0;
+        double thatNonZeroIndex = 0;
+        int pp = 0; // pointer for rr
+        int p1 = 0; // // pointer for linkedList1
+        int p2 = 0; // pointer for linkedList2
+        int[] p1p2 = new int[2];
+        boolean linkedList1JustDid = false;
+
+        while (p1 < sz1 && p2 < sz2) {
+            thisNonZeroIndex = linkedList1.get(p1)[0];
+            thatNonZeroIndex = linkedList2.get(p2)[0];
+            if (thisNonZeroIndex == thatNonZeroIndex) {
+              //  System.out.println(thisNonZeroIndex);
+                linkedList1JustDid = true;
+                pp = (int)thisNonZeroIndex;
+                rr[pp] = linkedList1.get(p1)[1] + linkedList2.get(p2)[1];
+                p1++;
+                p2++;
+            }
+            else if (thisNonZeroIndex < thatNonZeroIndex) {
+                pp = (int)thisNonZeroIndex;
+                rr[pp] = linkedList1.get(p1)[1];
+                linkedList1JustDid = true;
+                p1++;
+            }
+            else {// thisNonZeroIndex > thatNonZeroIndex
+                pp = (int)thatNonZeroIndex;
+                rr[pp] = linkedList2.get(p2)[1];
+                linkedList1JustDid = false;
+                p2++;
+            }
+        }
+        // we might not exhaust all items in 1 LLst, so chk it
+        if (p1 <= sz1-1 && !(p2 <= sz2-1)) { // linkedList1 not done yet
+            copyRest(pp+1, p1, linkedList1, rr);
+        }
+        else if (!(p1 <= sz1-1) && (p2 <= sz2-1)) {// linkedList2 not done yet
+            copyRest(pp+1, p2, linkedList2, rr);
+        }
+        else {// both linkedList1 and linkedList2 are at end
+            if (linkedList1JustDid)
+                copyRest(pp+1, p2, linkedList2, rr);
+            else
+                copyRest(pp+1, p1, linkedList1, rr);
+        }
+        return rr;
+    }
+
+    private void copyRest(int pp, int p,
+                          LinkedList<Double[]> linkedList0, double[] rr) {
+        while (p <= linkedList0.size()-1) {
+            rr[pp] = linkedList0.get(p)[1];
+            p++;
+            pp++;
+        }
+    }
+
+    // thisNonZeroIndex < thatNonZeroIndex
+    private int[] dealwithllst(double thisNonZeroIndex, int p1, LinkedList<Double[]> linkedList1,
+                               double thatNonZeroIndex, int p2, LinkedList<Double[]> linkedList2) {
+        // mv linkedList11
+        while (thisNonZeroIndex < thatNonZeroIndex
+                && p1 < linkedList1.size()-1) {
+            p1++;
+            System.out.println("p1 = " + p1);
+            thisNonZeroIndex = linkedList1.get(p1)[0];
+        }
+        return new int[]{p1,p2};
+    }
+
+    public static void main(String[] args) {
+//        LinkedList<Integer[]> linkedList1 = new LinkedList<>();
+//        linkedList1.add(new Integer[]{3, 11});
+//        LinkedList<Integer[]> linkedList2 = new LinkedList<>();
+//        linkedList2.add(new Integer[]{0, 11});
+
+        EX4458a ex1 = new EX4458a(new double[]{0, 1,  2,  0, 0,  0, 5,   11,  0,   22, 0});
+        EX4458a ex2 = new EX4458a(new double[]{0, 0,  3,  4, 0,  0, 6,   0,   8,   0,  7});
+
+        double[] dd = ex1.plus(ex2);
+        System.out.println(dd);
+    }
+}
+
