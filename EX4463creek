@@ -1,0 +1,106 @@
+
+package a44ST;
+
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdRandom;
+import java.util.ArrayList;
+import java.util.List;
+
+////4.4.63 Entropy. We define the relative entropy of a text corpus with n
+//// words, k of
+////        which are distinct as
+////        E = 1 / (n lg n) (p0 lg(k/p0)  p1 lg(k/p1) …  pk1 lg(k/pk1))
+////        where pi is the fraction of times that word i appears. Write a
+////        program that reads in a
+////        text corpus and prints the relative entropy. Convert all letters
+////        to lowercase and treat
+////        punctuation marks as whitespace
+
+public class EX4463creek {
+
+}
+
+class BST63
+{
+    private Node root;
+    private class Node
+    {
+        String key;
+        Integer val;
+        Node left, right;
+        Node(String key, Integer val)
+        { this.key = key; this.val = val; }
+    }
+
+    public List<Integer> inorderTrvRecur() {
+        List<Integer> result = new ArrayList<>();
+        if(root != null){
+            helper(root,result);
+        }
+        return result;
+    }
+
+    private void helper(Node p, List<Integer> result){
+        if(p.left!=null)
+            helper(p.left,result);
+        result.add(p.val);
+        if(p.right!=null)
+            helper(p.right,result);
+    }
+
+    public Integer get(String key)
+    { return get(root, key); }
+    private Integer get(Node x, String key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+    public void put(String key, Integer val)
+    { root = put(root, key, val); }
+    private Node put(Node x, String key, Integer val)
+    {
+        if (x == null) return new Node(key, val);
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
+        else {
+            int vv = get(key);
+            x.val = vv+1;
+        }
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BST63 bst63 = new BST63();
+        In in = new In("C:/Users/.../myEX4463data.txt");
+        String[] database = in.readAllLines();
+        StdRandom.shuffle(database);
+        int n = 0;
+        for (int i = 0; i < database.length; i++) { //
+            String[] tokens = database[i].split(" ");
+            n += tokens.length;
+            for (int j = 0; j < tokens.length; j++) {
+                bst63.put(tokens[j], 1);
+            }
+        }
+        List<Integer> llst = bst63.inorderTrvRecur();
+        int k = llst.size();
+        double[] arr = new double[k];
+        // ArrayList to Array Conversion
+        for (int i = 0; i < k; i++) {
+            int frq = llst.get(i);
+            arr[i] = 1.0*frq / n;
+        }
+        double sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += arr[i]*Math.log(k/arr[i]);
+        }
+        double E = 1 / ((n*Math.log(n))*sum);
+        System.out.println("Entropy = " + E);
+    }
+}
+
+
