@@ -12,6 +12,8 @@ public class EX4455 {
 class BST55<Key extends Comparable<Key>, Value>
 {
     private Node root;
+    // chk if a key is already in the tree
+    private boolean keyAgain;
     private class Node
     {
         Key key;
@@ -26,29 +28,27 @@ class BST55<Key extends Comparable<Key>, Value>
         }
     }
 
-    // https://stackoverflow.com/questions/2329171/find-kth-smallest-element-in-a-binary-search-tree-in-optimum-way
-// If k is smaller than the number of elements in the left subtree,
-// the kth smallest element must belong to the left subtree
-
-    public void select(int k)
+    public Key select(int k)
     {
-        select(k, root);
+        return select(k, root);
     }
 
-    private void select(int k, Node nd)//, int count)
+    private Key select(int k, Node nd)//, int count)//, Queue<Key> queue)
     {
         if (nd == null) {
-            return;
+            return null;
         }
+// If k is smaller than the number of elements in the left subtree,
+// the kth smallest element must belong to the left subtree
         if (nd.nNODESinLeftSubtree > k) {
-            select(k, nd.left);
+           // System.out.println("in left of " + nd.key);
+            return select(k, nd.left);
         }
         else if (nd.nNODESinLeftSubtree == k) {
-            System.out.println("kth is " + nd.key);
-            return;
+            return nd.key;
         }
         else {// nd.nNODESinLeftSubtree < k
-            select(k - nd.nNODESinLeftSubtree, nd.right);
+            return select(k - nd.nNODESinLeftSubtree, nd.right);
         }
     }
 
@@ -67,14 +67,20 @@ class BST55<Key extends Comparable<Key>, Value>
 
     private Node put(Node x, Key key, Value val)
     {
-        if (x == null) { // only get called when root is null
+        if (x == null) {
             Node node = new Node(key, val);
             return node;
         }
-        // when we get here, x != null
         int cmp = key.compareTo(x.key);
         if (cmp < 0) {
-            x.nNODESinLeftSubtree++;
+            if (get(key) != null)
+                keyAgain = true;
+            // new key
+            if (keyAgain != true) {
+                x.nNODESinLeftSubtree++;
+            }
+            else
+                keyAgain = false; // set back to false for following judgement
             x.left = put(x.left, key, val);
         }
         else if (cmp > 0) {
@@ -86,18 +92,19 @@ class BST55<Key extends Comparable<Key>, Value>
 
     public static void main(String[] args) {
         BST55 bst55 = new BST55();
-        bst55.put("j", 11);
-        bst55.put("f", 11);
-        bst55.put("p", 11);
-        bst55.put("w", 11);
-        bst55.put("b", 11);
-        bst55.put("e", 11);
-
-        bst55.put("l", 11);
-        bst55.put("m", 11);
-        bst55.put("n", 11);
-        bst55.put("o", 11);
-        int k = 10;
-        bst55.select(k);
+        bst55.put("9", 11);
+        bst55.put("4", 11);
+        bst55.put("3", 11);
+        bst55.put("1", 11);
+        bst55.put("7", 11);
+        bst55.put("0", 11);
+        bst55.put("3", 22); // 3 twice
+        bst55.put("8", 11);
+        bst55.put("6", 11);
+        int k = 4;
+        System.out.println("k "+k);
+        String ss = (String)bst55.select(k);
+        System.out.println(ss);
     }
 }
+
