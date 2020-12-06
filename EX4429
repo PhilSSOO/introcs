@@ -1,3 +1,4 @@
+
 package a44ST;
 //    4.4.29 Modify BST to add a method size() that returns the number
 //    of key–value
@@ -8,6 +9,9 @@ package a44ST;
 class EX4429<Key extends Comparable<Key>, Value>
 {
     private Node root;
+    // chk if a key is already in the tree
+    private boolean keyAgain;
+
     private class Node
     {
         Key key;
@@ -44,12 +48,18 @@ class EX4429<Key extends Comparable<Key>, Value>
 
     private Node put(Node x, Key key, Value val)
     {
-        if (x == null) {
+        if (x == null) { // only get called when root is null
             Node node = new Node(key, val);
             return node;
         }
-        // when we get here, x != null
-        x.nNODESinSubtree++;
+        if (get(key) != null)
+            keyAgain = true;
+        // new key
+        if (keyAgain != true) {
+            x.nNODESinSubtree++;
+        }
+        else
+            keyAgain = false; // set back to false for following judgement
         int cmp = key.compareTo(x.key);
         if (cmp < 0) {
             x.left = put(x.left, key, val);
@@ -57,20 +67,24 @@ class EX4429<Key extends Comparable<Key>, Value>
         else if (cmp > 0) {
             x.right = put(x.right, key, val);
         }
-        else x.val = val;
+        else {
+            x.val = val;
+        }
         return x;
     }
 
     public static void main(String[] args) {
         EX4429 ex4429 = new EX4429();
-        // value doesnt matter
         ex4429.put("f", 1);
         ex4429.put("b", 2);
         ex4429.put("d", 0);
         ex4429.put("j", 11);
         ex4429.put("h", 0);
+        ex4429.put("b", 222); // b inserted twice
         ex4429.put("l", 11);
 
         int sz = ex4429.size(ex4429.root);
     }
 }
+
+
