@@ -1,0 +1,172 @@
+package a44ST;
+//4.4.64 Dynamic discrete distribution. Create a data type that supports
+// the following two operations: add() and random(). The add() method
+// should insert a new
+//        item into the data structure if it has not been seen before;
+//        otherwise, it should
+//        increase its frequency count by 1. The random() method should
+//        return an item at
+//        random, where the probabilities are weighted by the frequency
+//        of each item. Maintain subtree sizes in each node (see exercise
+//        4.4.29). The running time should be
+//        proportional to the height of the tree
+
+import edu.princeton.cs.algs4.StdRandom;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class EX4464 {
+}
+
+class BST64<Key extends Comparable<Key>>//, Value>
+{
+    private Node root;
+    // chk if a key is already in the tree
+    private boolean keyAgain;
+    private class Node
+    {
+        Key key;
+        int val;
+        int nNODESinLeftSubtree;
+        Node left, right;
+        Node(Key key)//, int val
+        {
+            this.key = key;
+            this.val = 1;
+            nNODESinLeftSubtree = 1;
+        }
+    }
+
+   private Key selectex4455(int k)
+   {
+       return select(k, root);
+   }
+
+    private Key select(int k, Node nd)//, int count)//, Queue<Key> queue)
+    {
+        if (nd == null) {
+            return null;
+        }
+// If k is smaller than the number of elements in the left subtree,
+// the kth smallest element must belong to the left subtree
+        if (nd.nNODESinLeftSubtree > k) {
+            return select(k, nd.left);
+        }
+        else if (nd.nNODESinLeftSubtree == k) {
+            return nd.key;
+        }
+        else {// nd.nNODESinLeftSubtree < k
+            return select(k - nd.nNODESinLeftSubtree, nd.right);
+        }
+    }
+
+    // return an item at random, where the probabilities are
+    // weighted by the frequency of each item
+    public Key random() {
+        List<Integer> llst = getFrqDist();
+        int k = llst.size();
+        int[] cumu = new int[k+1];
+        // ArrayList to Array Conversion
+        cumu[0] = 0;
+        System.out.print(0);
+        for (int i = 1; i <= k; i++) {
+            int frq = llst.get(i-1);
+            cumu[i] = cumu[i - 1] + frq;
+            System.out.print(" "+cumu[i]);
+        }
+        System.out.println();
+        int ran = StdRandom.uniform(cumu[k]);
+
+        for (int i = 0; i < k; i++) {
+            if (ran >= cumu[i] && ran < cumu[i + 1]) {
+                Key key = selectex4455(i+1);
+                return key;
+            }
+        }
+        return null;
+    }
+    // foll is actually inorderTrvRecur frm 4463
+    private List<Integer> getFrqDist() {
+        List<Integer> result = new ArrayList<>();
+        if(root != null)
+            helper(root,result);
+        return result;
+    }
+
+    private void helper(Node p, List<Integer> list) {
+        
+        if(p.left != null)
+            helper(p.left,list);
+        list.add(p.val);
+        if(p.right != null)
+            helper(p.right,list);
+    }
+
+    public int get(Key key)
+    { return get(root, key); }
+
+    private int get(Node x, Key key)
+    {
+        if (x == null) return 0;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+
+    public void add(Key key)
+    { root = put(root, key); }
+
+    private Node put(Node x, Key key)
+    {
+        if (x == null) { // only get called when root is null
+            Node node = new Node(key);
+            return node;
+        }
+        // when we get here, x != null
+        int cmp = key.compareTo(x.key);
+        // && get(key) != 0 means key already in there
+        if (cmp < 0) { //  && get(key) != 0
+            if (get(key) != 1)
+                keyAgain = true;
+            // new key
+            if (keyAgain != true) {
+                x.nNODESinLeftSubtree++;
+            }
+            else
+                keyAgain = false; // set back to false for following judgement
+
+            x.left = put(x.left, key);
+        }
+        else if (cmp > 0) {
+            x.right = put(x.right, key);
+        }
+        else x.val++;
+        return x;
+    }
+
+    public static void main(String[] args) {
+        BST64 ex4429 = new BST64();
+        ex4429.add("f");
+        ex4429.add("b");
+        ex4429.add("d");
+        ex4429.add("b");
+        ex4429.add("h");
+        ex4429.add("l");
+        ex4429.add("f");
+        ex4429.add("b");
+        ex4429.add("d");
+        ex4429.add("b");
+        ex4429.add("h");
+        ex4429.add("l");
+
+        for (int i = 0; i < 11; i++) {
+            String ss = (String)ex4429.random();
+            System.out.println("ss "+ss);
+            System.out.println();
+        }
+    }
+}
+
+
