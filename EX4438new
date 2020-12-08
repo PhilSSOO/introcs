@@ -1,0 +1,100 @@
+package a44ST;
+//4.4.38 Implement a linear-time method isBST() that returns true if the
+// tree is a
+//        BST, and false otherwise.
+//Solution : This task is a bit more difficult than it might seem. Use an
+// overloaded
+//        recursive method isBST() that takes two additional arguments lo
+//        and hi and returns true if the tree is a BST and all its values
+//        are between lo and hi
+//and use null
+//        to represent both the smallest possible and largest possible keys.
+public class EX4438new {
+}
+
+//Program 4.4.4 Binary search tree
+class BST4438<Key extends Comparable<Key>, Value>
+{
+    private Node root;
+    private class Node
+    {
+        Key key;
+        Value val;
+        Node left, right;
+        Node(Key key, Value val)
+        { this.key = key; this.val = val; }
+    }
+
+    public boolean isBST(Key min, Key max) {
+        return isBST(root, min, max);
+    }
+
+    public boolean isBST(Node nd, Key min, Key max) {
+        if (nd == null)
+            return true;
+        if (nd.key.compareTo(min) <= 0) {
+            return false;
+        }
+
+        if (nd.key.compareTo(max) >= 0) {
+            return false;
+        }
+        // updt max to nd.key
+        if (!isBST(nd.left, min, nd.key)) return false;
+        // updt min to nd.key
+        if (!isBST(nd.right, nd.key, max)) return false;
+        return true;
+    }
+
+    public Value get(Key key)
+    { return get(root, key); }
+    
+    private Value get(Node x, Key key)
+    {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else return x.val;
+    }
+    
+    public void put(Key key, Value val)
+    { root = put(root, key, val); }
+    
+    private Node put(Node x, Key key, Value val)
+    {
+        if (x == null) return new Node(key, val);
+        int cmp = key.compareTo(x.key);
+        if (cmp < 0) x.left = put(x.left, key, val);
+        else if (cmp > 0) x.right = put(x.right, key, val);
+        else x.val = val;
+        return x;
+    }
+    
+    public void changeKey(Key init, Key fina)
+    {
+        Node nd = root;
+        while (nd != null) {
+            int cmp = nd.key.compareTo(init);
+            if (cmp > 0) nd = nd.left;
+            else if (cmp < 0) nd = nd.right;
+            else {
+                nd.key = fina;
+                break;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        BST4438<Integer, Integer> bst4438 = new BST4438();
+        bst4438.put(3, 111);
+        bst4438.put(1, 111);
+        bst4438.put(0, 111);
+        bst4438.put(5, 111);
+        bst4438.put(8, 111);
+        // intentionally set a node to an abnormal key
+        bst4438.changeKey(5, -1);
+        boolean bb = bst4438.isBST(Integer.MIN_VALUE, Integer.MAX_VALUE);
+        System.out.println(bb);
+    }
+}
