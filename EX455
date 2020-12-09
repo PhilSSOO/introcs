@@ -1,0 +1,101 @@
+package a45;
+
+import edu.princeton.cs.algs4.*;
+
+//4.5.5 Create a copy constructor for Graph that takes as its argument a
+// graph G,
+//        then creates and initializes a new, independent copy of the graph.
+//        Any future changes to G should not affect the newly created graph
+public class EX455 {
+}
+
+//Program 4.5.1 Graph data type
+class Graph455
+{
+    private ST<String, SET<String>> st;
+    private int nEdges;
+    
+    public Graph455()
+    { st = new ST<String, SET<String>>(); }
+
+    public Graph455 makeCopy(Graph455 orig)
+    {
+        Graph455 gCopy = new Graph455();
+        
+        gCopy.st = new ST<String, SET<String>>();
+        // put key, value pairs from orig to copy's st
+        for (String v : orig.vertices())
+        {
+            SET<String> oriNei = orig.st.get(v);
+          //  if (oriNei != null) {
+            SET<String> set = new SET<>();
+            for (String w : oriNei) {
+                set.add(w);
+            }
+            gCopy.st.put(v,set);
+          //  }
+        }
+        
+        gCopy.nEdges = orig.nEdges;
+        return gCopy;
+    }
+
+    public Graph455(String filename, String delimiter)
+    {
+        st = new ST<String, SET<String>>();
+        In in = new In(filename);
+        while (in.hasNextLine())
+        {
+            String line = in.readLine();
+            String[] names = line.split(delimiter);
+            for (int i = 1; i < names.length; i++)
+                addEdge(names[0], names[i]);
+        }
+    }
+
+    public void addEdge(String v, String w)
+    { // Put v in w’s SET and w in v’s SET.
+        if (!st.contains(v)) st.put(v, new SET<String>());
+        if (!st.contains(w)) st.put(w, new SET<String>());
+        st.get(v).add(w);
+        st.get(w).add(v);
+        nEdges++;
+    }
+    
+    public Iterable<String> adjacentTo(String v)
+    { return st.get(v); }
+    
+    public Iterable<String> vertices()
+    { return st.keys(); }
+
+    public int V() {
+        return st.size();
+    }
+
+    public int E() {
+        return nEdges;
+    }
+
+    public String toString()
+    {
+        String s = "";
+        for (String v : vertices())
+        {
+            s += v + " ";
+            for (String w : adjacentTo(v))
+                s += w + " ";
+            s += "\n";
+        }
+        return s;
+    }
+
+    public static void main(String[] args)
+    { 
+        Graph455 G = new Graph455();
+        G.addEdge("a", "b");
+        G.addEdge("a", "c");
+        G.addEdge("c", "d");
+        
+        Graph455 copy = G.makeCopy(G);
+    }
+}
