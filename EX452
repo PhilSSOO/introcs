@@ -1,0 +1,112 @@
+package a45;
+
+import edu.princeton.cs.algs4.*;
+
+//4.5.2 Add to Graph a method degree() that takes a string argument and
+// returns
+//        the degree of the specified vertex. Use this method to find the
+//        performer in the file
+//        movies.txt who has appeared in the most movies.
+//        Answer :
+//public int degree(String v)
+//        {
+//        if (st.contains(v)) return st.get(v).size();
+//        else return 0;
+//        }
+public class EX452 {
+}
+
+//Program 4.5.1 Graph data type
+class Graph452
+{
+    private ST<String, SET<String>> st;
+    private int nEdges;
+    
+    public Graph452()
+    { st = new ST<String, SET<String>>(); }
+    public Graph452(String filename, String delimiter)
+    {
+        st = new ST<String, SET<String>>();
+        In in = new In(filename);
+        while (in.hasNextLine())
+        {
+            String[] sArr = in.readLine().split(delimiter);
+            for (int i = 1; i < sArr.length; i++) {
+            // sArr[0] is movie name, lk Tin Men (1987)
+            // foll is to add edge bt a mov w each of pfmrs
+                addEdge(sArr[0], sArr[i]);
+            }
+        }
+    }
+
+    public int degree(String v)
+    {
+        if (st.contains(v)) return st.get(v).size();
+        else return 0;
+    }
+
+    public void addEdge(String v, String w)
+    { // Put v in w’s SET and w in v’s SET.
+        if (!st.contains(v)) st.put(v, new SET<String>());
+        if (!st.contains(w)) st.put(w, new SET<String>());
+        st.get(v).add(w);
+        st.get(w).add(v);
+        nEdges++;
+    }
+    public Iterable<String> adjacentTo(String v)
+    { return st.get(v); }
+    public Iterable<String> vertices()
+    { return st.keys(); }
+
+    public int V() {
+        return st.size();
+    }
+
+    public int E() {
+        return nEdges;
+    }
+
+    public String toString()
+    {
+        String s = "";
+        for (String v : vertices())
+        {
+            s += v + " ";
+            for (String w : adjacentTo(v))
+                s += w + " ";
+            s += "\n";
+        }
+        return s;
+    }
+
+    // See Exercises 4.5.1-4 for V(), E(), degree(),
+// hasVertex(), and hasEdge().
+    public static void main(String[] args)
+    {
+        String filename = "C:/Users/.../introcs-data/movies.txt";
+        String delimiter = "/";
+        Graph452 G = new Graph452(filename, delimiter);
+        int nMmovies = 0;
+        String pWithMmovies = "";
+        for (String ss : G.vertices()) {
+            // pick out a person from person + mvie
+            // movie name end w ), lk Tin Men (1987)
+            if (ss.charAt(ss.length()-1) != ')') {
+                int xx = G.degree(ss);
+                if (xx > nMmovies) {
+                    nMmovies = xx;
+                    pWithMmovies = ss;
+                }
+            }
+        }
+        System.out.println("pWithMmovies "+pWithMmovies);
+        System.out.println("nMmovies "+nMmovies);
+    }
+}
+//    This implementation uses ST and SET (see sEction 4.4) to implement
+//    the graph data type.
+//        Clients build graphs by adding edges and process them by iterating
+//        over the vertices and then
+//        over the set of vertices adjacent to each vertex. See the text for
+//        toString() and a matching
+//        constructor that reads a graph from a file.
