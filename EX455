@@ -18,7 +18,7 @@ class Graph455
     public Graph455()
     { st = new ST<String, SET<String>>(); }
 
-    public Graph455 makeCopy(Graph455 orig)
+    public Graph455(Graph455 orig)
     {
         Graph455 gCopy = new Graph455();
         
@@ -37,7 +37,6 @@ class Graph455
         }
         
         gCopy.nEdges = orig.nEdges;
-        return gCopy;
     }
 
     public Graph455(String filename, String delimiter)
@@ -96,6 +95,6 @@ class Graph455
         G.addEdge("a", "c");
         G.addEdge("c", "d");
         
-        Graph455 copy = G.makeCopy(G);
+        Graph455 copy = new Graph455(G);
     }
 }
