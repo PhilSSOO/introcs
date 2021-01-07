@@ -8,33 +8,16 @@ import edu.princeton.cs.algs4.*;
 
 public class EX4518 {
     private int n;
+    // when no shortct, each vtx can only access other vtx via circum
+    // we hv a circle, top vtx is say vtx 0, bott 500 (so tot 1000)
+    // i = 0 to 998 (clockws), j = 1 to 999, j>i (so 1 pair is only counted once)
 
     public EX4518(int nVertices) {
         n = nVertices;
     }
-    
-    private int[][] randomEdges(int nRanE) {
-        int[][] arr = new int[nRanE][2];
-        int i = 0;
-        int ran1, ran2, min, max;
-        while (i < nRanE) {
-            ran1 = StdRandom.uniform(n);
-            ran2 = StdRandom.uniform(n);
-            if (ran2 -  ran1 > 2 && isDff(arr, ran1, ran2, i)) 
-                arr[i++] = new int[]{ran1,ran2};
-        }
-       // Arrays.sort(arr);
-//        for (int j = 0; j < nRanE; j++) {
-//            for (int k = 0; k < 2; k++) {
-//                System.out.print(arr[j][k]);
-//            }
-//            System.out.println();
-//        }
-        return arr;
-    }
-// helper to randomEdges, ensuring distinct edges be genrtd
+
     private boolean isDff(int[][] arr, int ran1, int ran2, int curr) {
-        for (int i = 0; i < curr; i++) { // cmp (ran1, ...2) to all ahead of it
+        for (int i = 0; i < curr; i++) { // i <= curr??????
             if (arr[i][0] == ran1 && arr[i][1] == ran2)
                 return false;
         }
@@ -54,65 +37,116 @@ public class EX4518 {
         }
         return shortest;
     }
-// helper to shortest,
+
     private int len(int[] ed, int i, int j) {
         if (ed[0] < i || ed[1] > j)
             return pathLen(i, j);
-        return pathLen(i, ed[0]) + 1 + pathLen(ed[1], j);
+        return Math.min((pathLen(i, ed[0]) + 1 + pathLen(ed[1], j)),
+                pathLen(i,j));
+    }
+
+    private int[][] randomEdges(int nRanE) {
+        int[][] arr = new int[nRanE][2];
+        int i = 0;
+        int ran1, ran2, min, max;
+        while (i < nRanE) {
+            ran1 = StdRandom.uniform(n);
+            ran2 = StdRandom.uniform(n);
+            if (ran2 -  ran1 > 2 && isDff(arr, ran1, ran2, i))
+                arr[i++] = new int[]{ran1,ran2};
+        }
+       // Arrays.sort(arr);
+//        for (int j = 0; j < nRanE; j++) {
+//            for (int k = 0; k < 2; k++) {
+//                System.out.print(arr[j][k]);
+//            }
+//            System.out.println();
+//        }
+        return arr;
+    }
+
+    public static void plotPoints_p247(double[] a)
+    { // Plot points at (i, a[i]).
+        int n = a.length;
+        StdDraw.setXscale(-1, n);
+        StdDraw.setPenRadius(1/(3.0*n));
+        for (int i = 0; i < n; i++)
+            StdDraw.point(i, a[i]);
     }
 
     public static void plotLines_p247(double[] a)
     { // Plot lines through points at (i, a[i]).
         int n = a.length;
+        double scale = 0.005;
         StdDraw.setXscale(-1, n);
         StdDraw.setPenRadius();
         for (int i = 1; i < n; i++)
-            StdDraw.line(i-1, a[i-1], i, a[i]);
+            StdDraw.line(i-1, scale*a[i-1], i, scale*a[i]);
+    }
+
+    public static void plotBars_p247(double[] a)
+    { // Plot bars from (0, a[i]) to (i, a[i]).
+        int n = a.length;
+        StdDraw.setXscale(-1, n);
+        for (int i = 0; i < n; i++)
+            StdDraw.filledRectangle(i, a[i]/2, 0.25, a[i]/2);
+
+//            StdDraw.filledRectangle(i, a[i]/2, 0.25, a[i]/2);
     }
 
     public double[] pathLenForNrandEdges(int trialsForEachRand, int maxRandEdges) {
         double[] avrPathLenARR = new double[maxRandEdges+1];
         double sum = 0, sum0 = 0; // sum0 for 0 rand edges
-        double scale = 0.0005; //0.005;
-        // foll 8 lines calc 0 rand edges case
+
         for (int i = 0; i < n-1; i++) {
             for (int j = i+1; j < n; j++) {
                 sum0 += pathLen(i, j);
             }
         }
         int pairs = n*(n-1)/2;
-        double avr0 = sum0*1.0/pairs;
-        avrPathLenARR[0] = scale*avr0;
+        avrPathLenARR[0] = sum0*1.0/pairs;
 
         for (int nRand = 1; nRand <= maxRandEdges; nRand++) {
             for (int i = 0; i < trialsForEachRand; i++) {
                 sum += avrPathLength(nRand);
             }
-            avrPathLenARR[nRand] = scale*sum/trialsForEachRand;
+            avrPathLenARR[nRand] = sum/trialsForEachRand;
             sum = 0;
         }
-    //    for (int i = 1; i < avrPathLenARR.length; i++) {
-          //  System.out.print(" " + avrPathLenARR[i]);
-      //  }
+//        for (int i = 0; i < avrPathLenARR.length; i++) {
+//            System.out.print(" " + avrPathLenARR[i]);
+//        }
         return avrPathLenARR;
     }
 
-    private double avrPathLength(int nRand) {
-//        if (nRand == 0)
-//            return avrPathLengthWOshortcuts();
-        int[][] edges = randomEdges(nRand);
-        // assu n even
+    private double avrPathLengthWOshortcuts() {
         int sum = 0;
+        double scale = 0.0005; //0.005;
         int lenIJ;
         for (int i = 0; i < n-1; i++) {
             for (int j = i+1; j < n; j++) {
-                lenIJ = shortest(edges, i, j);
+                lenIJ = pathLen(i, j);
                 sum += lenIJ;
             }
         }
         int pairs = n*(n-1)/2;
         double avr = sum*1.0/pairs;
         System.out.println("avr "+avr);
+        return avr;
+    }
+
+    private double avrPathLength(int nRand) {
+        int[][] edges = randomEdges(nRand);
+        // assu n even
+        int sum = 0;
+        for (int i = 0; i < n-1; i++) {
+            for (int j = i+1; j < n; j++) {
+                sum += shortest(edges, i, j);
+            }
+        }
+        int pairs = n*(n-1)/2;
+        double avr = sum*1.0/pairs;
+//        System.out.println("avr "+avr);
         return avr;
     }
 
@@ -126,7 +160,7 @@ public class EX4518 {
 
     public static void main(String[] args) {
         int n = 1000;
-        EX4518 ex4518 = new EX4518(n);
+        EX4518 ex4518 = new EX4518(n);// , (31,32), (41,42)
         int trialsForEachRand = 100, maxRandEdges = 10;
         double[] a = ex4518.pathLenForNrandEdges(trialsForEachRand, maxRandEdges);
         plotLines_p247(a);
