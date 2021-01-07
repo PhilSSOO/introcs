@@ -1,0 +1,162 @@
+
+//4.5.18 Write a program that plots average path length versus the number
+// of random edges as random shortcuts are added to a 2-ring graph on 1,000
+// vertices.
+
+// half finished. there is a prb with 0 rand edges case
+import edu.princeton.cs.algs4.*;
+
+public class EX4518 {
+    private int n;
+
+    public EX4518(int nVertices) {
+        n = nVertices;
+    }
+    
+    private int[][] randomEdges(int nRanE) {
+        int[][] arr = new int[nRanE][2];
+        int i = 0;
+        int ran1, ran2, min, max;
+        while (i < nRanE) {
+            ran1 = StdRandom.uniform(n);
+            ran2 = StdRandom.uniform(n);
+            if (ran2 -  ran1 > 2 && isDff(arr, ran1, ran2, i)) 
+                arr[i++] = new int[]{ran1,ran2};
+        }
+       // Arrays.sort(arr);
+//        for (int j = 0; j < nRanE; j++) {
+//            for (int k = 0; k < 2; k++) {
+//                System.out.print(arr[j][k]);
+//            }
+//            System.out.println();
+//        }
+        return arr;
+    }
+// helper to randomEdges, ensuring distinct edges be genrtd
+    private boolean isDff(int[][] arr, int ran1, int ran2, int curr) {
+        for (int i = 0; i < curr; i++) { // cmp (ran1, ...2) to all ahead of it
+            if (arr[i][0] == ran1 && arr[i][1] == ran2)
+                return false;
+        }
+        return true;
+    }
+
+    private int shortest(int[][] arr, int i, int j) {
+        if (arr.length == 0)
+            return pathLen(i,j);
+        int shortest = Integer.MAX_VALUE;
+        int temp;
+
+        for (int k = 0; k < arr.length; k++) {
+            temp = len(arr[k], i, j);
+            if (shortest > temp)
+                shortest = temp;
+        }
+        return shortest;
+    }
+// helper to shortest,
+    private int len(int[] ed, int i, int j) {
+        if (ed[0] < i || ed[1] > j)
+            return pathLen(i, j);
+        return pathLen(i, ed[0]) + 1 + pathLen(ed[1], j);
+    }
+
+    public static void plotLines_p247(double[] a)
+    { // Plot lines through points at (i, a[i]).
+        int n = a.length;
+        StdDraw.setXscale(-1, n);
+        StdDraw.setPenRadius();
+        for (int i = 1; i < n; i++)
+            StdDraw.line(i-1, a[i-1], i, a[i]);
+    }
+
+    public double[] pathLenForNrandEdges(int trialsForEachRand, int maxRandEdges) {
+        double[] avrPathLenARR = new double[maxRandEdges+1];
+        double sum = 0, sum0 = 0; // sum0 for 0 rand edges
+        double scale = 0.0005; //0.005;
+        // foll 8 lines calc 0 rand edges case
+        for (int i = 0; i < n-1; i++) {
+            for (int j = i+1; j < n; j++) {
+                sum0 += pathLen(i, j);
+            }
+        }
+        int pairs = n*(n-1)/2;
+        double avr0 = sum0*1.0/pairs;
+        avrPathLenARR[0] = scale*avr0;
+
+        for (int nRand = 1; nRand <= maxRandEdges; nRand++) {
+            for (int i = 0; i < trialsForEachRand; i++) {
+                sum += avrPathLength(nRand);
+            }
+            avrPathLenARR[nRand] = scale*sum/trialsForEachRand;
+            sum = 0;
+        }
+    //    for (int i = 1; i < avrPathLenARR.length; i++) {
+          //  System.out.print(" " + avrPathLenARR[i]);
+      //  }
+        return avrPathLenARR;
+    }
+
+    private double avrPathLength(int nRand) {
+//        if (nRand == 0)
+//            return avrPathLengthWOshortcuts();
+        int[][] edges = randomEdges(nRand);
+        // assu n even
+        int sum = 0;
+        int lenIJ;
+        for (int i = 0; i < n-1; i++) {
+            for (int j = i+1; j < n; j++) {
+                lenIJ = shortest(edges, i, j);
+                sum += lenIJ;
+            }
+        }
+        int pairs = n*(n-1)/2;
+        double avr = sum*1.0/pairs;
+        System.out.println("avr "+avr);
+        return avr;
+    }
+
+    private int pathLen(int i, int j) {
+        int jmi = j - i;
+        if(jmi > n/2) {
+            jmi = n - jmi;
+        }
+        return (jmi/2 + jmi%2);
+    }
+
+    public static void main(String[] args) {
+        int n = 1000;
+        EX4518 ex4518 = new EX4518(n);
+        int trialsForEachRand = 100, maxRandEdges = 10;
+        double[] a = ex4518.pathLenForNrandEdges(trialsForEachRand, maxRandEdges);
+        plotLines_p247(a);
+        System.out.println();
+    }
+}
+
+class Graph18
+{
+    private ST<String, SET<String>> st;
+    public Graph18()
+    { st = new ST<String, SET<String>>(); }
+    public void addEdge(String v, String w)
+    { // Put v in w’s SET and w in v’s SET.
+        if (!st.contains(v)) st.put(v, new SET<String>());
+        if (!st.contains(w)) st.put(w, new SET<String>());
+        st.get(v).add(w);
+        st.get(w).add(v);
+    }
+    public Iterable<String> adjacentTo(String v)
+    { return st.get(v); }
+    public Iterable<String> vertices()
+    { return st.keys(); }
+    // See Exercises 4.5.1-4 for V(), E(), degree(),
+// hasVertex(), and hasEdge().
+    public static void main(String[] args)
+    { // Read edges from standard input; print resulting graph.
+        Graph G = new Graph();
+        while (!StdIn.isEmpty())
+            G.addEdge(StdIn.readString(), StdIn.readString());
+        StdOut.print(G);
+    }
+}
