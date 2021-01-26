@@ -1,0 +1,182 @@
+//package a45;
+
+import edu.princeton.cs.algs4.*;
+//4.5.26 Write a SmallWorld and Graph client that generates k-ring
+//        graphs and tests whether they exhibit the small-world phenomenon
+//        (first do exercise 4.5.23).
+
+public class EX4526 {
+    public static void kRingGraph(Graph24 graph24, int k, int nVertices,
+                                  boolean[][] bb) {
+        for (int i = 0; i < nVertices; i++) {
+            for (int j = 1; j <= k; j++) {
+                graph24.addEdge(i, i+j,nVertices,bb);
+                graph24.addEdge(i, i-j,nVertices,bb);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Graph24 graph24 = new Graph24();
+        SmallWorld24 smallWorld24 = new SmallWorld24();
+        int k = 2;
+        int nVertices = 8;
+        // bb to label an edge has been added to a pair (i,j) of vertices
+        boolean[][] bb = new boolean[nVertices][nVertices];
+        // generate a k-ring graph
+        kRingGraph(graph24, k, nVertices, bb);
+
+        double degree = SmallWorld24.averageDegree(graph24);
+        double length = SmallWorld24.averagePathLength(graph24);
+        double cluster = SmallWorld24.clusteringCoefficient(graph24);
+        StdOut.printf("number of vertices = %7d\n", graph24.V());
+        StdOut.printf("average degree = %7.3f\n", degree);
+        double dd = 20*Math.log(nVertices);
+        if (degree > dd)
+            StdOut.println("degree too LG to be a smallworld");
+        else
+            StdOut.println("degree is good to be a smallworld");
+        StdOut.printf("average path length = %7.3f\n", length);
+        double dd1 = 10*Math.log(nVertices);
+        if (length > dd1)
+            StdOut.println("avrLen too LG to be a smallworld");
+        else
+            StdOut.println("avrLen is good to be a smallworld");
+
+        StdOut.printf("clustering coefficient = %7.3f\n", cluster);
+        if (cluster > .1)
+            StdOut.println("clCff too LG to be a smallworld");
+        else
+            StdOut.println("clCff is good to be a smallworld");
+    }
+}
+
+class SmallWorld24 {
+    public static double averageDegree(Graph24 G) {
+        return 2.0 * G.E() / G.V();
+    }
+
+    public static double averagePathLength(Graph24 G) { // Compute average vertex distance.
+        int sum = 0;
+        for (Integer v : G.vertices()) { // Add to total distances from v.
+            PathFinder24 pf = new PathFinder24(G, v);
+            for (Integer w : G.vertices())
+                sum += pf.distanceTo(w);
+        }
+        return (double) sum / (G.V() * (G.V() - 1));
+    }
+
+    public static double clusteringCoefficient(Graph24 G) { // Compute clustering coefficient.
+        double total = 0.0;
+        for (Integer v : G.vertices()) { // Cumulate local clustering coefficient of vertex v.
+            int possible = G.degree(v) * (G.degree(v) - 1);
+            int actual = 0;
+            for (Integer u : G.adjacentTo(v))
+                for (Integer w : G.adjacentTo(v))
+                    if (G.hasEdge(u, w)) actual++;
+            if (possible > 0)
+                total += 1.0 * actual / possible;
+        }
+        return total / G.V();
+    }
+}
+
+class Graph24
+{
+    private ST<Integer, SET<Integer>> st;
+    private int nEdges;
+
+    public Graph24()
+    { st = new ST<Integer, SET<Integer>>(); }
+
+    public void addEdge(Integer vv, Integer ww, int nVertices, boolean[][] bb)
+    { // Put v in w’s SET and w in v’s SET.
+        int v = checkInput(vv, nVertices);
+        int w = checkInput(ww, nVertices);
+        if (bb[v][w] == false && bb[w][v] == false) {
+            if (!st.contains(v)) st.put(v, new SET<Integer>());
+            if (!st.contains(w)) st.put(w, new SET<Integer>());
+            st.get(v).add(w);
+            st.get(w).add(v);
+            System.out.println(v + " " + w);
+            bb[v][w] = true;
+            bb[w][v] = true;
+            nEdges++;
+        }
+    }
+
+    private int checkInput(Integer v, Integer nVertices) {
+        if (v >= nVertices)
+            return v-nVertices;
+        else if (v < 0)
+            return v+nVertices;
+        return v;
+    }
+
+    public int degree(Integer v) {
+        return st.get(v).size();
+    }
+
+    public Iterable<Integer> adjacentTo(Integer v)
+    { return st.get(v); }
+    
+    public Iterable<Integer> vertices()
+    { return st.keys(); }
+
+    public int V() {
+        return st.size();
+    }
+
+    public int E() {
+        return nEdges;
+    }
+
+    public boolean hasEdge(Integer s1, Integer s2) {
+        if (!st.contains(s1))
+            return false;
+        SET<Integer> s1Nei = st.get(s1);
+        return s1Nei.contains(s2);
+    }
+}
+
+class PathFinder24
+{
+    private ST<Integer, Integer> dist;
+    private ST<Integer, Integer> prev;
+    public PathFinder24(Graph24 G, Integer s)
+    { // Use BFS to compute shortest path from source
+// vertex s to each other vertex in graph G.
+        prev = new ST<Integer, Integer>();
+        dist = new ST<Integer, Integer>();
+        Queue<Integer> queue = new Queue<Integer>();
+        queue.enqueue(s);
+        dist.put(s, 0);
+        while (!queue.isEmpty())
+        { // Process next vertex on queue.
+            Integer v = queue.dequeue();
+            for (Integer w : G.adjacentTo(v))
+            { // Check whether distance is already known.
+                if (!dist.contains(w))
+                { // Add to queue; save shortest-path information.
+                    queue.enqueue(w);
+                    dist.put(w, 1 + dist.get(v));
+                    prev.put(w, v);
+                }
+            }
+        }
+    }
+
+    public int distanceTo(Integer v)
+    { return dist.get(v); }
+
+    public Iterable<Integer> pathTo(Integer v)
+    { // Vertices on a shortest path from s to v.
+        Stack<Integer> path = new Stack<Integer>();
+        while (v != null && dist.contains(v))
+        { // Push current vertex; move to previous vertex on path.
+            path.push(v);
+            v = prev.get(v);
+        }
+        return path;
+    }
+}
