@@ -1,0 +1,192 @@
+package a45;
+
+import edu.princeton.cs.algs4.*;
+
+//4.5.33 Connected components. A connected component in a graph is a maximal
+//        set of vertices that are mutually connected. Write a Graph client
+//        CCFinder that
+//        computes the connected components of a graph. Include a constructor
+//        that takes
+//        a Graph as an argument and computes all of the connected components
+//        using
+//        breadth-first search. Include a method areConnected(v, w) that
+//        returns true if
+//        v and w are in the same connected component and false otherwise. Also
+//        add a
+//        method components() that returns the number of connected components.
+
+public class EX4533 {
+    public static void main(String[] args) {
+        Graph24 graph24 = new Graph24();
+        graph24.addEdge("A", "B");
+        graph24.addEdge("A", "C");
+        graph24.addEdge("D", "E");
+      //  System.out.println("V " + graph24.V());
+      //  System.out.println("E " + graph24.E());
+        CCFinder ccFinder = new CCFinder(graph24);
+        int dd = ccFinder.components();
+        System.out.print(dd);
+        System.out.print(ccFinder.areConnected("A", "E"));
+    }
+}
+
+class CCFinder {
+    private Graph24 graph24;
+    private int nCompo;
+
+    public CCFinder(Graph24 g) {
+        nCompo = 1;
+        graph24 = g;
+    }
+
+    public boolean areConnected(String v, String w) {
+        PathFinder24 pathFinder24 = new PathFinder24(graph24, v);
+        return pathFinder24.dist.get(w) != null;
+    }
+
+    public int components() {
+        // mk a set
+        SET<String> vtxes = new SET<>();
+        for (String ss : graph24.vertices()) {
+            vtxes.add(ss);
+        }
+        iterToDff1(vtxes);
+        return nCompo;
+    }
+
+    private void iterToDff1(SET<String> vtxes) {
+        SET<String> unreachable = new SET<>();
+        String start = null;
+        // pick a elem fr vtxes
+        for (String ss : vtxes) {
+            start = ss;
+            break;
+        }
+        PathFinder24 pathFinder24 = new PathFinder24(graph24, start);
+        for (String ss : vtxes) {
+            if (pathFinder24.dist.get(ss) == null) {
+                unreachable.add(ss);
+            }
+        }
+        if (unreachable.size() == 0)
+            return;
+        else {
+            nCompo++;
+            iterToDff1(unreachable);
+        }
+    }
+}
+
+class SmallWorld24 {
+    public double averageDegree(Graph24 G) {
+        return 2.0 * G.E() / G.V();
+    }
+
+    public double averagePathLength(Graph24 G) { // Compute average vertex distance.
+        int sum = 0;
+        for (String v : G.vertices()) { // Add to total distances from v.
+            PathFinder24 pf = new PathFinder24(G, v);
+            for (String w : G.vertices())
+                sum += pf.distanceTo(w);
+        }
+        return (double) sum / (G.V() * (G.V() - 1));
+    }
+
+    public double clusteringCoefficient(Graph24 G) { // Compute clustering coefficient.
+        double total = 0.0;
+        for (String v : G.vertices()) { // Cumulate local clustering coefficient of vertex v.
+            int possible = G.degree(v) * (G.degree(v) - 1);
+            int actual = 0;
+            for (String u : G.adjacentTo(v))
+                for (String w : G.adjacentTo(v))
+                    if (G.hasEdge(u, w)) actual++;
+            if (possible > 0)
+                total += 1.0 * actual / possible;
+        }
+        return total / G.V();
+    }
+}
+
+class Graph24 {
+    public ST<String, SET<String>> st;
+    private int nEdges;
+
+    public Graph24() {
+        st = new ST<String, SET<String>>();
+    }
+
+    public void addEdge(String v, String w) { // Put v in w’s SET and w in v’s SET.
+        // if (bb[v][w] == false && bb[w][v] == false) {
+        if (!st.contains(v)) st.put(v, new SET<String>());
+        if (!st.contains(w)) st.put(w, new SET<String>());
+        st.get(v).add(w);
+        st.get(w).add(v);
+        nEdges++;
+    }
+
+    public int degree(String v) {
+        return st.get(v).size();
+    }
+
+    public Iterable<String> adjacentTo(String v) {
+        return st.get(v);
+    }
+
+    public Iterable<String> vertices() {
+        return st.keys();
+    }
+
+    public int V() {
+        return st.size();
+    }
+
+    public int E() {
+        return nEdges;
+    }
+
+    public boolean hasEdge(String s1, String s2) {
+        if (!st.contains(s1))
+            return false;
+        SET<String> s1Nei = st.get(s1);
+        return s1Nei.contains(s2);
+    }
+}
+
+class PathFinder24 {
+    public ST<String, Integer> dist;
+    private ST<String, String> prev;
+
+    public PathFinder24(Graph24 G, String s) { // Use BFS to compute shortest path from source
+// vertex s to each other vertex in graph G.
+        prev = new ST<String, String>();
+        dist = new ST<String, Integer>();
+        Queue<String> queue = new Queue<String>();
+        queue.enqueue(s);
+        dist.put(s, 0);
+        while (!queue.isEmpty()) { // Process next vertex on queue.
+            String v = queue.dequeue();
+            // exmne v's nei
+            for (String w : G.adjacentTo(v)) { // Check whether distance is already known.
+                if (!dist.contains(w)) { // Add to queue; save shortest-path information.
+                    queue.enqueue(w);
+                    dist.put(w, 1 + dist.get(v));
+                    prev.put(w, v);
+                }
+            }
+        }
+    }
+
+    public int distanceTo(String v) {
+        return dist.get(v);
+    }
+
+    public Iterable<String> pathTo(String v) { // Vertices on a shortest path from s to v.
+        Stack<String> path = new Stack<String>();
+        while (v != null && dist.contains(v)) { // Push current vertex; move to previous vertex on path.
+            path.push(v);
+            v = prev.get(v);
+        }
+        return path;
+    }
+}
+
