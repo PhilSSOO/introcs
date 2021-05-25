@@ -1,21 +1,23 @@
+////4.5.18 Write a program that plots average path length versus the number
+//// of random edges as random shortcuts are added to a 2-ring graph on 1,000
+//// vertices.
+package a45;
 
-//4.5.18 Write a program that plots average path length versus the number
-// of random edges as random shortcuts are added to a 2-ring graph on 1,000
-// vertices.
-
-// half finished. there is a prb with 0 rand edges case
 import edu.princeton.cs.algs4.*;
+import java.util.Arrays;
+import java.util.Comparator;
 
-public class EX4518 {
+public class EX4518a {
     private int n;
     // when no shortct, each vtx can only access other vtx via circum
     // we hv a circle, top vtx is say vtx 0, bott 500 (so tot 1000)
-    // i = 0 to 998 (clockws), j = 1 to 999, j>i (so 1 pair is only counted once)
+    // i = 0 to 998 (clockws), j = 1 to 999, j>i (so 1 pair is only
+    // counted once)
 
-    public EX4518(int nVertices) {
+    public EX4518a(int nVertices) {
         n = nVertices;
     }
-
+    // to weed out a pair tht is same as an existing one
     private boolean isDff(int[][] arr, int ran1, int ran2, int curr) {
         for (int i = 0; i < curr; i++) { // i <= curr??????
             if (arr[i][0] == ran1 && arr[i][1] == ran2)
@@ -24,133 +26,63 @@ public class EX4518 {
         return true;
     }
 
-    private int shortest(int[][] arr, int i, int j) {
-        if (arr.length == 0)
-            return pathLen(i,j);
-        int shortest = Integer.MAX_VALUE;
-        int temp;
-
-        for (int k = 0; k < arr.length; k++) {
-            temp = len(arr[k], i, j);
-            if (shortest > temp)
-                shortest = temp;
+    // find all edges within (i,j) and calc the path length
+    private int lenIJ(int[][] randEdges, int i, int j, int index) {
+        int nEd = randEdges.length;
+        // qualified edge Start
+        int qualifiedEdge = 0;
+        // if edg not confined in ij
+        while ((randEdges[qualifiedEdge][0] < i ||
+                randEdges[qualifiedEdge][1] > j)) {
+            qualifiedEdge++;
+            if (qualifiedEdge == nEd) {
+                break;
+            }
         }
-        return shortest;
+
+        if (qualifiedEdge == nEd) {
+            return pathLenViaCircle(i,j);
+        }
+        return pathLenViaCircle(i, randEdges[qualifiedEdge][0]) + 1 +
+                lenIJ(randEdges, randEdges[qualifiedEdge][1], j,
+                        qualifiedEdge+1);
     }
 
-    private int len(int[] ed, int i, int j) {
-        if (ed[0] < i || ed[1] > j)
-            return pathLen(i, j);
-        return Math.min((pathLen(i, ed[0]) + 1 + pathLen(ed[1], j)),
-                pathLen(i,j));
-    }
-
-    private int[][] randomEdges(int nRanE) {
-        int[][] arr = new int[nRanE][2];
+    private int[][] randomEdgesGenerator(int nRanE) {
+        int[][] randomEdges = new int[nRanE][2];
         int i = 0;
-        int ran1, ran2, min, max;
+        int ran1, ran2;
         while (i < nRanE) {
             ran1 = StdRandom.uniform(n);
             ran2 = StdRandom.uniform(n);
-            if (ran2 -  ran1 > 2 && isDff(arr, ran1, ran2, i))
-                arr[i++] = new int[]{ran1,ran2};
+            if (ran2 -  ran1 > 2 && isDff(randomEdges, ran1, ran2, i))
+                randomEdges[i++] = new int[]{ran1,ran2};
         }
-       // Arrays.sort(arr);
-//        for (int j = 0; j < nRanE; j++) {
-//            for (int k = 0; k < 2; k++) {
-//                System.out.print(arr[j][k]);
-//            }
-//            System.out.println();
-//        }
-        return arr;
+        sortbyColumn(randomEdges, 0);
+        return randomEdges;
     }
 
-    public static void plotPoints_p247(double[] a)
-    { // Plot points at (i, a[i]).
-        int n = a.length;
-        StdDraw.setXscale(-1, n);
-        StdDraw.setPenRadius(1/(3.0*n));
-        for (int i = 0; i < n; i++)
-            StdDraw.point(i, a[i]);
-    }
-
-    public static void plotLines_p247(double[] a)
-    { // Plot lines through points at (i, a[i]).
-        int n = a.length;
-        double scale = 0.005;
-        StdDraw.setXscale(-1, n);
-        StdDraw.setPenRadius();
-        for (int i = 1; i < n; i++)
-            StdDraw.line(i-1, scale*a[i-1], i, scale*a[i]);
-    }
-
-    public static void plotBars_p247(double[] a)
-    { // Plot bars from (0, a[i]) to (i, a[i]).
-        int n = a.length;
-        StdDraw.setXscale(-1, n);
-        for (int i = 0; i < n; i++)
-            StdDraw.filledRectangle(i, a[i]/2, 0.25, a[i]/2);
-
-//            StdDraw.filledRectangle(i, a[i]/2, 0.25, a[i]/2);
-    }
-
-    public double[] pathLenForNrandEdges(int trialsForEachRand, int maxRandEdges) {
-        double[] avrPathLenARR = new double[maxRandEdges+1];
-        double sum = 0, sum0 = 0; // sum0 for 0 rand edges
-
-        for (int i = 0; i < n-1; i++) {
-            for (int j = i+1; j < n; j++) {
-                sum0 += pathLen(i, j);
+    // Function to sort by column, frm
+    //https://www.geeksforgeeks.org/sorting-2d-array-according-values-given-column-java/
+    private static void sortbyColumn(int arr[][], int col)
+    {
+        // Using built-in sort function Arrays.sort
+        Arrays.sort(arr, new Comparator<int[]>() {
+            @Override
+            // Compare values according to columns
+            public int compare(final int[] entry1,
+                               final int[] entry2) {
+                // To sort in descending order revert
+                // the '>' Operator
+                if (entry1[col] > entry2[col])
+                    return 1;
+                else
+                    return -1;
             }
-        }
-        int pairs = n*(n-1)/2;
-        avrPathLenARR[0] = sum0*1.0/pairs;
-
-        for (int nRand = 1; nRand <= maxRandEdges; nRand++) {
-            for (int i = 0; i < trialsForEachRand; i++) {
-                sum += avrPathLength(nRand);
-            }
-            avrPathLenARR[nRand] = sum/trialsForEachRand;
-            sum = 0;
-        }
-//        for (int i = 0; i < avrPathLenARR.length; i++) {
-//            System.out.print(" " + avrPathLenARR[i]);
-//        }
-        return avrPathLenARR;
+        });
     }
 
-    private double avrPathLengthWOshortcuts() {
-        int sum = 0;
-        double scale = 0.0005; //0.005;
-        int lenIJ;
-        for (int i = 0; i < n-1; i++) {
-            for (int j = i+1; j < n; j++) {
-                lenIJ = pathLen(i, j);
-                sum += lenIJ;
-            }
-        }
-        int pairs = n*(n-1)/2;
-        double avr = sum*1.0/pairs;
-        System.out.println("avr "+avr);
-        return avr;
-    }
-
-    private double avrPathLength(int nRand) {
-        int[][] edges = randomEdges(nRand);
-        // assu n even
-        int sum = 0;
-        for (int i = 0; i < n-1; i++) {
-            for (int j = i+1; j < n; j++) {
-                sum += shortest(edges, i, j);
-            }
-        }
-        int pairs = n*(n-1)/2;
-        double avr = sum*1.0/pairs;
-//        System.out.println("avr "+avr);
-        return avr;
-    }
-
-    private int pathLen(int i, int j) {
+    private int pathLenViaCircle(int i, int j) {
         int jmi = j - i;
         if(jmi > n/2) {
             jmi = n - jmi;
@@ -159,12 +91,14 @@ public class EX4518 {
     }
 
     public static void main(String[] args) {
-        int n = 1000;
-        EX4518 ex4518 = new EX4518(n);// , (31,32), (41,42)
-        int trialsForEachRand = 100, maxRandEdges = 10;
-        double[] a = ex4518.pathLenForNrandEdges(trialsForEachRand, maxRandEdges);
-        plotLines_p247(a);
-        System.out.println();
+        int n = 100;
+        int nRanEd = 4;
+        EX4518a ex4518 = new EX4518a(n);
+        int[][] randEdges = ex4518.randomEdgesGenerator(nRanEd);
+        int start = 11;
+        int end = 91;
+        int startToEnd = ex4518.lenIJ(randEdges, start, end, 0);
+        System.out.println(startToEnd);
     }
 }
 
@@ -184,13 +118,4 @@ class Graph18
     { return st.get(v); }
     public Iterable<String> vertices()
     { return st.keys(); }
-    // See Exercises 4.5.1-4 for V(), E(), degree(),
-// hasVertex(), and hasEdge().
-    public static void main(String[] args)
-    { // Read edges from standard input; print resulting graph.
-        Graph G = new Graph();
-        while (!StdIn.isEmpty())
-            G.addEdge(StdIn.readString(), StdIn.readString());
-        StdOut.print(G);
-    }
 }
