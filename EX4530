@@ -1,0 +1,52 @@
+package a45;
+
+import edu.princeton.cs.algs4.*;
+
+//4.5.30 Large Bacon numbers. Find the performers in movies.txt with the largest,
+//        but finite, Kevin Bacon number.
+public class EX4530 {
+    public static void main(String[] args) {
+        String filename = "C:/Users/yqson/Documents/Java Princeton/introcs-data/movies.txt";
+        String delimiter = "/";
+        Graph24 graph24 = new Graph24(); 
+        In in = new In(filename);
+        while (in.hasNextLine()) {
+            String line = in.readLine();
+            String[] names = line.split(delimiter);
+            for (int i = 1; i < names.length; i++)
+                graph24.addEdge(names[0], names[i]);
+        }
+
+        String src = "Bacon, Kevin";
+        int kbNumber = -1111;
+        SET<String> largest = new SET<>();
+
+        PathFinder24 pathFinder24 = new PathFinder24(graph24, src);
+
+        for (String ss : graph24.vertices()) {
+            // if ss is a movie and is not conn to Kevin, rmv ss frm the gr
+            // ???????????? movieA - actorX - movieB - Kevin, does ths mean
+            // movieA - Kevin
+
+            // use nxtToLast to judge if a str is a person or not
+            char nxtToLast = ss.charAt(ss.length() - 2);
+            // if nxtToLast is not 0-9, ss is a person
+            if ((nxtToLast < '0' || nxtToLast > '9')
+                    && pathFinder24.dist.get(ss) != null) { // != null ensures a finite num
+                int dd = pathFinder24.dist.get(ss);
+                if (dd > kbNumber) {
+                    kbNumber = dd;
+                    largest = new SET<>();
+                    largest.add(ss);
+                }
+                else if (dd == kbNumber)
+                    largest.add(ss);
+            }
+        }
+        System.out.println("kbNumber " + kbNumber);
+        for (String sss : largest) {
+            System.out.print(" " + sss);
+        }
+        System.out.println();
+    }
+}
