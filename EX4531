@@ -1,0 +1,192 @@
+package a45;
+
+import edu.princeton.cs.algs4.*;
+
+//4.5.31 Histogram. Write a program BaconHistogram that prints a histogram of
+//        Kevin Bacon numbers, indicating how many performers from movies.txt
+//        have a
+//        Bacon number of 0, 1, 2, 3, …. Include a category for those who have
+//        an infinite
+//        number (not connected at all to Kevin Bacon).
+
+public class EX4531 {
+    public static void main(String[] args) {
+        String filename = "C:/Users/.../Documents/Java Princeton/introcs-data/movies.txt";
+        String delimiter = "/";
+        Graph24 graph24 = new Graph24();
+        In in = new In(filename);
+        while (in.hasNextLine()) {
+            String line = in.readLine();
+            String[] names = line.split(delimiter);
+            for (int i = 1; i < names.length; i++)
+                graph24.addEdge(names[0], names[i]);
+        }
+        System.out.println("V " + graph24.V());
+                System.out.println("E " + graph24.E());
+                
+        ST<Integer, SET<String>> baconNumbers = new ST<>();
+        // for infinite Bacon numbers
+        SET<String> infinite = new SET<>();
+
+        String src = "Bacon, Kevin";
+        int kbNumber = -1111;
+        PathFinder24 pathFinder24 = new PathFinder24(graph24, src);
+
+        for (String ss : graph24.vertices()) {
+            // if ss is a movie and is not conn to Kevin, rmv ss frm the gr
+            // ???????????? movieA - actorX - movieB - Kevin, does ths mean
+            // movieA - Kevin
+
+            // use nxtToLast to judge if a str is a person or not
+            char nxtToLast = ss.charAt(ss.length() - 2);
+            if (nxtToLast < '0' || nxtToLast > '9') {
+                if (pathFinder24.dist.get(ss) != null) {
+                    int dd = pathFinder24.dist.get(ss);
+                    if (dd > kbNumber) {
+                        kbNumber = dd;
+                        if (!baconNumbers.contains(kbNumber)) {
+                            baconNumbers.put(kbNumber, new SET<>());
+                            baconNumbers.get(kbNumber).add(ss);
+                        }
+                    }
+                }
+                else { // pathFinder24.dist.get(ss) == null
+                    infinite.add(ss);
+                }
+            }
+        }
+        System.out.print("infinite: ");
+
+        for (String sss : infinite) {
+            System.out.print(" " + sss);
+        }
+        System.out.println();
+        for (Integer bnum : baconNumbers.keys()) {
+            System.out.print(bnum + ": ");
+            for (String sss : baconNumbers.get(bnum)) {
+                System.out.print(" " + sss);
+            }
+            System.out.println();
+        }
+    }
+}
+
+
+class SmallWorld24 {
+    public double averageDegree(Graph24 G) {
+        return 2.0 * G.E() / G.V();
+    }
+
+    public double averagePathLength(Graph24 G) { // Compute average vertex distance.
+        int sum = 0;
+        for (String v : G.vertices()) { // Add to total distances from v.
+            PathFinder24 pf = new PathFinder24(G, v);
+            for (String w : G.vertices())
+                sum += pf.distanceTo(w);
+        }
+        return (double) sum / (G.V() * (G.V() - 1));
+    }
+
+    public double clusteringCoefficient(Graph24 G) { // Compute clustering coefficient.
+        double total = 0.0;
+        for (String v : G.vertices()) { // Cumulate local clustering coefficient of vertex v.
+            int possible = G.degree(v) * (G.degree(v) - 1);
+            int actual = 0;
+            for (String u : G.adjacentTo(v))
+                for (String w : G.adjacentTo(v))
+                    if (G.hasEdge(u, w)) actual++;
+            if (possible > 0)
+                total += 1.0 * actual / possible;
+        }
+        return total / G.V();
+    }
+}
+
+class Graph24 {
+    public ST<String, SET<String>> st;
+    private int nEdges;
+
+    public Graph24() {
+        st = new ST<String, SET<String>>();
+    }
+
+    public void rmvEdge(String v, String w) {
+        st.get(v).delete(w);
+        st.get(w).delete(v);
+//        System.out.println(v + " " + w);
+        nEdges--;
+    }
+
+    public void addEdge(String v, String w) { // Put v in w’s SET and w in v’s SET.
+        // if (bb[v][w] == false && bb[w][v] == false) {
+        if (!st.contains(v)) st.put(v, new SET<String>());
+        if (!st.contains(w)) st.put(w, new SET<String>());
+        st.get(v).add(w);
+        st.get(w).add(v);
+        nEdges++;
+    }
+
+    public int degree(String v) {
+        return st.get(v).size();
+    }
+
+    public Iterable<String> adjacentTo(String v) {
+        return st.get(v);
+    }
+
+    public Iterable<String> vertices() {
+        return st.keys();
+    }
+
+    public int V() {
+        return st.size();
+    }
+
+    public int E() {
+        return nEdges;
+    }
+
+    public boolean hasEdge(String s1, String s2) {
+        if (!st.contains(s1))
+            return false;
+        SET<String> s1Nei = st.get(s1);
+        return s1Nei.contains(s2);
+    }
+}
+
+class PathFinder24 {
+    public ST<String, Integer> dist;
+    private ST<String, String> prev;
+
+    public PathFinder24(Graph24 G, String s) { // Use BFS to compute shortest path from source
+// vertex s to each other vertex in graph G.
+        prev = new ST<String, String>();
+        dist = new ST<String, Integer>();
+        Queue<String> queue = new Queue<String>();
+        queue.enqueue(s);
+        dist.put(s, 0);
+        while (!queue.isEmpty()) { // Process next vertex on queue.
+            String v = queue.dequeue();
+            for (String w : G.adjacentTo(v)) { // Check whether distance is already known.
+                if (!dist.contains(w)) { // Add to queue; save shortest-path information.
+                    queue.enqueue(w);
+                    dist.put(w, 1 + dist.get(v));
+                    prev.put(w, v);
+                }
+            }
+        }
+    }
+
+    public int distanceTo(String v) {
+        return dist.get(v);
+    }
+
+    public Iterable<String> pathTo(String v) { // Vertices on a shortest path from s to v.
+        Stack<String> path = new Stack<String>();
+        while (v != null && dist.contains(v)) { // Push current vertex; move to previous vertex on path.
+            path.push(v);
+            v = prev.get(v);
+        }
+        return path;
+    }
+}
