@@ -1,0 +1,171 @@
+package a45;
+
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.ST;
+import edu.princeton.cs.algs4.Stack;
+
+//4.5.27 In a grid graph, vertices are arranged in an n-by-n grid, with
+//        edges connecting each vertex to its neighbors above, below, to the
+//        left, and to the right in the grid. Compose a SmallWorld and Graph
+//        client that generates grid graphs and tests whether they exhibit the
+//        small-world phenomenon (first do exercise 4.5.23).
+
+public class EX4527 {
+    public static void grid(int n, Graph27 graph27) {
+        int[][] mm = new int[n][n];
+        for (int i = 0; i < n*n; i++) {
+            int row = i/n;
+            int col = i%n;
+            mm[row][col] = i;
+        }
+        for (int i = 0; i < n*n; i++) {
+            int row = i/n;
+            int col = i%n;
+            graph27.addEdge(i, row-1, col, n);
+            graph27.addEdge(i, row+1, col, n);
+            graph27.addEdge(i, row, col-1, n);
+            graph27.addEdge(i, row, col+1, n);
+        }
+    }
+
+    public static void main(String[] args) {
+        Graph27 graph27 = new Graph27();
+        grid(3, graph27);
+        SmallWorld27 smallWorld27 = new SmallWorld27();
+        double dd = smallWorld27.averageDegree(graph27);
+        double dd1 = smallWorld27.averagePathLength(graph27);
+        double dd2 = smallWorld27.clusteringCoefficient(graph27);
+        System.out.println();
+    }
+}
+
+class SmallWorld27 {
+    public static double averageDegree(Graph27 G) {
+        return 2.0 * G.E() / G.V();
+    }
+
+    public static double averagePathLength(Graph27 G) { // Compute average vertex distance.
+        int sum = 0;
+        for (Integer v : G.vertices()) { // Add to total distances from v.
+            PathFinder27 pf = new PathFinder27(G, v);
+            for (Integer w : G.vertices())
+                sum += pf.distanceTo(w);
+        }
+        return (double) sum / (G.V() * (G.V() - 1));
+    }
+
+    public static double clusteringCoefficient(Graph27 G) { // Compute clustering coefficient.
+        double total = 0.0;
+        for (Integer v : G.vertices()) { // Cumulate local clustering coefficient of vertex v.
+            int possible = G.degree(v) * (G.degree(v) - 1);
+            int actual = 0;
+            for (Integer u : G.adjacentTo(v))
+                for (Integer w : G.adjacentTo(v))
+                    if (G.hasEdge(u, w)) actual++;
+            if (possible > 0)
+                total += 1.0 * actual / possible;
+        }
+        return total / G.V();
+    }
+}
+
+class Graph27
+{
+    private ST<Integer, SET<Integer>> st;
+    private int nEdges;
+
+    public Graph27()
+    { st = new ST<Integer, SET<Integer>>(); }
+
+    public void addEdge(int v, int row, int col, int n) // int[][] mm
+    { // Put v in w’s SET and w in v’s SET.
+        if (row < 0 || row >= n)
+            return;
+        if (col < 0 || col >= n)
+            return;
+        int w = row*n + col;
+        if (v < w) {
+            if (!st.contains(v)) st.put(v, new SET<Integer>());
+            if (!st.contains(w)) st.put(w, new SET<Integer>());
+            st.get(v).add(w);
+            st.get(w).add(v);
+            System.out.println(v + "# " + w);
+            nEdges++;
+        }
+    }
+
+    private int checkInput(Integer v, Integer nVertices) {
+        if (v >= nVertices)
+            return v-nVertices;
+        else if (v < 0)
+            return v+nVertices;
+        return v;
+    }
+
+    public int degree(Integer v) {
+        return st.get(v).size();
+    }
+
+    public Iterable<Integer> adjacentTo(Integer v)
+    { return st.get(v); }
+    public Iterable<Integer> vertices()
+    { return st.keys(); }
+
+    public int V() {
+        return st.size();
+    }
+
+    public int E() {
+        return nEdges;
+    }
+
+    public boolean hasEdge(Integer s1, Integer s2) {
+        if (!st.contains(s1))
+            return false;
+        SET<Integer> s1Nei = st.get(s1);
+        return s1Nei.contains(s2);
+    }
+}
+
+class PathFinder27
+{
+    private ST<Integer, Integer> dist;
+    private ST<Integer, Integer> prev;
+    public PathFinder27(Graph27 G, Integer s)
+    { // Use BFS to compute shortest path from source
+// vertex s to each other vertex in graph G.
+        prev = new ST<Integer, Integer>();
+        dist = new ST<Integer, Integer>();
+        Queue<Integer> queue = new Queue<Integer>();
+        queue.enqueue(s);
+        dist.put(s, 0);
+        while (!queue.isEmpty())
+        { // Process next vertex on queue.
+            Integer v = queue.dequeue();
+            for (Integer w : G.adjacentTo(v))
+            { // Check whether distance is already known.
+                if (!dist.contains(w))
+                { // Add to queue; save shortest-path information.
+                    queue.enqueue(w);
+                    dist.put(w, 1 + dist.get(v));
+                    prev.put(w, v);
+                }
+            }
+        }
+    }
+
+    public int distanceTo(Integer v)
+    { return dist.get(v); }
+
+    public Iterable<Integer> pathTo(Integer v)
+    { // Vertices on a shortest path from s to v.
+        Stack<Integer> path = new Stack<Integer>();
+        while (v != null && dist.contains(v))
+        { // Push current vertex; move to previous vertex on path.
+            path.push(v);
+            v = prev.get(v);
+        }
+        return path;
+    }
+}
