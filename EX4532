@@ -1,0 +1,210 @@
+package a45;
+//4.5.32 Performer–performer graph. As mentioned in the text, an alternative
+// way to
+//        compute Kevin Bacon numbers is to build a graph where there is a
+//        vertex for each
+//        performer (but not for each movie), and where two performers are
+//        adjacent if they
+//        appear in a movie together (see program 4.5.6). Calculate Kevin
+//        Bacon numbers
+//        by running breadth-first search on the performer–performer graph.
+//        Compare the
+//        running time with the running time on movies.txt. Explain why this
+//        approach
+//        is so much slower. Also explain what you would need to do to include
+//        the movies
+//        along the path, as happens automatically with our implementation
+
+import edu.princeton.cs.algs4.*;
+
+public class EX4532 {
+    public static void main(String[] args) { 
+        long st = System.currentTimeMillis();
+        String filename = "C:/Users/.../Documents/Java Princeton/introcs-data/movies.txt";
+        String delimiter = "/";
+        Graph24 graph24 = new Graph24();
+        In in = new In(filename); 
+        while (in.hasNextLine()) {
+            String line = in.readLine();
+            String[] names = line.split(delimiter);
+            for (int i = 1; i < names.length; i++) {
+                for (int ii = i+1; ii < names.length; ii++) {
+                    graph24.addEdge(names[i], names[ii]);
+                }
+            }
+        }
+
+        System.out.println("V " + graph24.V());
+        System.out.println("E " + graph24.E());
+
+        ST<Integer, SET<String>> baconNumbers = new ST<>();
+        // for infinite Bacon numbers
+        SET<String> infinite = new SET<>();
+
+        String src = "Bacon, Kevin";
+        int kbNumber = -1111;
+        PathFinder24 pathFinder24 = new PathFinder24(graph24, src);
+
+        for (String ss : graph24.vertices()) {
+            if (pathFinder24.dist.get(ss) != null) {
+                int dd = pathFinder24.dist.get(ss);
+                if (dd > kbNumber) {
+                    kbNumber = dd;
+                    if (!baconNumbers.contains(kbNumber)) {
+                        baconNumbers.put(kbNumber, new SET<>());
+                        baconNumbers.get(kbNumber).add(ss);
+                    }
+                }
+            }
+            else { // pathFinder24.dist.get(ss) == null
+                infinite.add(ss);
+            }
+        }
+        System.out.print("infinite: ");
+
+        for (String sss : infinite) {
+            System.out.print(" " + sss);
+        }
+        System.out.println();
+        for (Integer bnum : baconNumbers.keys()) {
+            System.out.print(bnum + ": ");
+            for (String sss : baconNumbers.get(bnum)) {
+                System.out.print(" " + sss);
+            }
+            System.out.println();
+        }
+        long end = System.currentTimeMillis();
+        System.out.println(end - st);
+    }
+}
+
+class SmallWorld24 {
+    public double averageDegree(Graph24 G) {
+        return 2.0 * G.E() / G.V();
+    }
+
+    public double averagePathLength(Graph24 G) { // Compute average vertex distance.
+        int sum = 0;
+        for (String v : G.vertices()) { // Add to total distances from v.
+            PathFinder24 pf = new PathFinder24(G, v);
+            for (String w : G.vertices())
+                sum += pf.distanceTo(w);
+        }
+        return (double) sum / (G.V() * (G.V() - 1));
+    }
+
+    public double clusteringCoefficient(Graph24 G) { // Compute clustering coefficient.
+        double total = 0.0;
+        for (String v : G.vertices()) { // Cumulate local clustering coefficient of vertex v.
+            int possible = G.degree(v) * (G.degree(v) - 1);
+            int actual = 0;
+            for (String u : G.adjacentTo(v))
+                for (String w : G.adjacentTo(v))
+                    if (G.hasEdge(u, w)) actual++;
+            if (possible > 0)
+                total += 1.0 * actual / possible;
+        }
+        return total / G.V();
+    }
+}
+
+class Graph24 {
+    public ST<String, SET<String>> st;
+    private int nEdges;
+
+    public Graph24() {
+        st = new ST<String, SET<String>>();
+    }
+
+    public void addEdge(String v, String w) { // Put v in w’s SET and w in v’s SET.
+        // if (bb[v][w] == false && bb[w][v] == false) {
+        if (!st.contains(v)) st.put(v, new SET<String>());
+        if (!st.contains(w)) st.put(w, new SET<String>());
+        st.get(v).add(w);
+        st.get(w).add(v);
+        nEdges++;
+    }
+
+    public int degree(String v) {
+        return st.get(v).size();
+    }
+
+    public Iterable<String> adjacentTo(String v) {
+        return st.get(v);
+    }
+
+    public Iterable<String> vertices() {
+        return st.keys();
+    }
+
+    public int V() {
+        return st.size();
+    }
+
+    public int E() {
+        return nEdges;
+    }
+
+    public boolean hasEdge(String s1, String s2) {
+        if (!st.contains(s1))
+            return false;
+        SET<String> s1Nei = st.get(s1);
+        return s1Nei.contains(s2);
+    }
+}
+
+class PathFinder24 {
+    public ST<String, Integer> dist;
+    private ST<String, String> prev;
+
+    public PathFinder24(Graph24 G, String s) { // Use BFS to compute shortest path from source
+// vertex s to each other vertex in graph G.
+        prev = new ST<String, String>();
+        dist = new ST<String, Integer>();
+        Queue<String> queue = new Queue<String>();
+        queue.enqueue(s);
+        dist.put(s, 0);
+        while (!queue.isEmpty()) { // Process next vertex on queue.
+            String v = queue.dequeue();
+            // exmne v's nei
+            for (String w : G.adjacentTo(v)) { // Check whether distance is already known.
+                if (!dist.contains(w)) { // Add to queue; save shortest-path information.
+                    queue.enqueue(w);
+                    dist.put(w, 1 + dist.get(v));
+                    prev.put(w, v);
+                }
+            }
+        }
+    }
+
+    public int distanceTo(String v) {
+        return dist.get(v);
+    }
+
+    public Iterable<String> pathTo(String v) { // Vertices on a shortest path from s to v.
+        Stack<String> path = new Stack<String>();
+        while (v != null && dist.contains(v)) { // Push current vertex; move to previous vertex on path.
+            path.push(v);
+            v = prev.get(v);
+        }
+        return path;
+    }
+}
+//V 115240
+//        E 7340457
+//infinite:  Aaron, Nicholas Abrikosov, Andrei Aeamsamang, Kanta Agami, Isaac Ahamdloo, Hossein Ahola-Valo, Aleksanteri Akan, Tarik Aked, Chintamani Akçatepe, Halit Akçatepe, Sitki Alcañiz, Muntsa Aleksandrov, Grigori Aleksandrova, Yelizaveta Alikhani, Seyed Karym Alizé Amado, Chisco Andriolo, Jacob André, Victor Annuar, Wisarup Antonov, Aleksandr Aparin, N. Ar, Müjde Arakelian, Francesca Aridogan, Kerem Ariman, Ahmet Arsky, Nikolai Artels, Steven Asqarpoor, Kazem Aubier, Stephanie Aubier, Stéphane Axel (II) Bada, Emmanuelle Bagdonas, Vladas Bai, Mei Barsky, Vladimir Barzaga, Luis Baskin, Cezmi Beaulieu, Trace Becker, Étienne Belvaux, Bruno Belvaux, Lucien Belvaux, Rémy Berda, Aleksandr Bernon, Bleuette Bilda, Ertugrul Bishop, Joe (III) Blagg, Brandon Blasband, Philippe Blinnikov, Sergei Bobrov, Ivan Bonzel, André Bottemanne, Paul Bradshaw, Keith (I) Brady, John (VIII) Branchu, Jacques Branice, Ligia Brodsky Brunnet Burns, Bettie Butler, Jay (II) Bychkov, Mikhail Büyüküstün, Tuba Calinescu, Florin Caranfil, Nae Carruth, Chip Carruth, John Carruth, Shane Cavender, George Cavill, Keith Cavillot, Jean-Pol Chaharian, Ali Chang, Jonathan (I) Chapelot, Antoine Chatelain, Hélène Chen, Edmund Chen, Hsi-Sheng Chen, Yiwen Chenut, Jean-Marc Cherkasov, Nikolai Chin, Cub Chin, Wing-Wai Choi, Jeong-ho Chokmorov, Suimenkul Chotphan, Ousinthorn Chou, Lawrence Coburn, Pat (I) Cohn, Andy Congsheng, Tang Cooder, Joachim Cooder, Ry Cook, Jon (I) Cotica, Gina Cotica, Olivier Cotica, Ricardo Craeynest, Josephs Crawford, Carrie Crumb, Beatrice Crumb, Charles Crumb, Dana Crumb, Jesse Crumb, Maxon Crumb, Robert (I) Crumb, Sophie Cummee, Sungwen Cunningham, Lisa (II) D'Hondt, Laurence Dair, Masume Damrongwiseeatpanich Danilchenko, Svetlana Danilova, Aleksandra De Soualhat, Eric Dehghan, Reza Delannoy, Henri Deman, Rachel Depierre Diaconu, Mircea Dickenson, Tim Dikinciler, Yetkin Dinica, Gheorghe Dobronravov, Ivan Domrachyov, Vasili Donahue, Don Doran, Rob (II) Drye, Jenny Duangtoy, Jinda Dubois, Fernaud Dubovik, Lazar Duriensuk, Sopol Durukan, Oktar Durà, Pau Dzhumadylov, Sovetbek Eisenstein, Julia Eisenstein, Sergei M. Elmas, Naz Engels, Marcel English, Deirdre Ergenç, Halit Ergüvenç, Kemal Faccetti, Germano Fajt, Andrei Famille Chanimbaud Famille Dujardin Famille Garrido Famille Jeune Famille Lacombe Famille Olléon Famille Ponte Famille Rochès Famille Thouvenin Fandango, Alexandra Farjaut Farrokh Hashemian, Amir Feldman, Konstantin Feng, Yuying Fenin, Lev Feray, Günfer Feridun, Savli Fernández, Julio Alberto Ferrante, Traci Ferrer, Ibrahim Feyzabadi, Navid Firat, Idil Florea Vizante, Marius Foss, Wenche Fostier, Aldo Franck (II) Francois, Clotilde François, Alain Gao, Enman Garay, Jesús Garin, Vladimir (I) Geets, Jean-Paul Ghiuta, Monica Ghorbandi, Gol Rahman Gilissen, Irene Glaenzel, Mònica Glauberman, A. Gnevashev, Igor (I) Godé, Sylviane Goisse, Patrick Golbahari, Marina Gomorov, Mikhail González, Carlos (VI) González, Eduardo (VI) González, Rubén (VII) Goodell, Kathy Gooden, Casey Gouyon, David Gracia, Ana (I) Grieg, Steve Griffith, Bill (I) Gruda, Aysen Guillaume (IV) Guolin, Ma Guthrie, Paul (II) Guven, Ozan Gyun-Ho, Im Gögen, Coskun Gökgöz, Mahmut Güder, Tugçe Günaydin, Engin Günaydin, Muhittin Gürdap, Cem Gürses, Muharrem Haj-Amini, Siamak Haj-Amini, Soheil Haj-Hosseini, Mohammad Hall, Jay Han, Yeo-reum Hanich, Davos Hansard, Lelanie Hanson, Dian Haref Harati, Mohamad Haugen, Per Theodor Haviv, Ronit Hawking, Richard Heide-Steen Jr., Harald Heinrich, André Herati, Arif Ho, Si Won Hogsett, Scott Hologne, Alain Hologne, Micheline Hongrattanaporn, Pornchai Hosseini, Seyd-Ali Hosseinian, Mohammad-Hasan Hsiao, Shu-shen Hsu, Shu-Yuan Hughes, Robert (I) Huimin, Rong Hunter, Dirk Hyun-Min, Kwon Hümeyra Igoe, Christopher Iudov, Leonid Ivashova, Vera Jae-Ik, Yoo Jafar-Mohammadi, Nafise Jang, Hang-Seon Jang, Hoon Jang, Jae-yong Jang, Ji-yong Jang, Seok-bin Jeamsakol, Panpimol Jeannot (II) Jenkins, Rob Jennings, William Bryan Jeon, Jin-bae Jessie (II) Jie, Jiao Jim, Pui Ho Jin, Elaine Jo, Jae-hyeon Joan, Joel Joffroy, Pierre Johan (I) Johann Jonathan (VIII) Jong-Gil, Lee Joyner, David (II) Jozinovic, Robert Julien (I) Jung, In-gi Jung, Sung-hoon Junjiamrat, Narongsak Juster, Leif Jérome Kang, Sung-hoon Karabey, Hayri Karadayi, Hakki Kaya, Binnur Kazakova, Lyubov Kazemi, Amir-Ali Kazemi, Javad Keaton, Camille Kelm Kevin (VIII) Kharazchi, Rahman Khorulev, B. Kim, Gul-seon Kim, Han (II) Kim, Hyung-suk Kim, Maeng-sung Kim, Yeo-jin Kim, Yoosuk King, William John Kleemann, Gunter Klein, Janine Klein, William (I) Klyukvin, Ivan Ko, Su-Yun Ko, Yin Ping Ko, Yue-Lin Kolstad, Henki Kominsky, Aline Korobei Korshikov, Dmitri Kravchenko, Aleksei Kremena, Vladimir Kryzhanovsky, Ye. Kuntipan, Wirasinee Kuskan, Fikret Kuys, Andre Kwak, Ji-min Kwon, Hyuk-ho LaGrange, Anne Labrada, Salvador Repilado Lagutin, Ivan Laime, André Lau, Mylio Lau, Yuk Ha Lauciavicius, Liubomiras Laura (III) Lavronenko, Konstantin Le Merdy, Édith Lebrun, Pascal Ledoux, Jacques Lee, Angelica Lee, Dah-hae Lee, Eol Lee, Hing Kim Lee, Hong-suk Lee, Hyun-kyoon Lee, Jong-su Lee, Ju-seok Lee, Kelly (II) Lee, Mi-suk (II) Lee, Seung-yeon Lee, Ui-soo Leelanukul, Somchai Lens, Bob Leonard, Elaine Leung, Tao Levshin, Aleksandr Leyva, Pío Li, Fanfan Licea, Manuel 'Puntillita' Lin, Adriene Lingyu, Li Lisichenok, N. Liu, Hanzhi Lo, Candy Lopez, Georges Lorents, Viktor Lujano, Bob Lumiste, Juris Lyan-Kun Léa (I) Létitia López, Orlando 'Cachaíto' Mackey, Brendan (I) Madou, Malou Magali (III) Magana, Benito Suárez Magnotti, Alexis Mahachanok, Vuanna Mahree, Diane Maleki, Hadi Maleki, Qolamreza Mallon, Jim Manayev, Vladimir Mariage, Benoît Maric, Kristijana Marie-Elizabeth Marusov Maschetti, Jean-Claude Mason, Felicity (II) Massalitinova, Varvara Matytsky, G. Matyullin, Takhir Maurstad, Toralv McGowan, Kathleen (I) McKay, Mungo Mel, Li Mensforth, Peter Merkuryev, Pyotr Merveille, Vincent (I) Mingshan, Zhang Mirabal, Manuel 'Guajiro' Miranda, Carlos Campo Mirkarimi, Kamal Mironova, Olga Mirzai, Zahra Mishatkin, Valentin Mokhber, Ahmad Mokhtari, Dariush Molleur, Joyce Moon, Sung-hyuk Moore, Robyn (I) Mortavazi, Mohammad Hossein Muller, Martin Munzuk, Maksim Murphy, Kevin (II) Méliès, Georges Mézières, Myriam Nader Khadjeh, Mohamad Nader, Khwaja Naji, Mohammad Amir Nasit, Adile Nathalie (VII) Nejad, Moshen Qadiri Nelson, Michael J. Neyman, Jackey Neyman, Tom Nichols, Anthony (I) Nicolescu, Mara Niculescu, Ovidiu Nielson, Stephanie Nilsen, Rolf Just Noi, Azade Qale Nologne, Anny Novikov, Vasili Nubiola, Esther Nuntasapee, Tassanana Négroni, Jean O'Donnell, Steven (III) Ochoa, Eliades Océane (I) Odinokov, Fyodor Ogata, Issei Okhlopkov, Nikolai Olivier (II) Oppezzi, Alain Orbey, Ergin Orenstein, Peggy Orlov, Dmitri (III) Orozco, Marieta Orr, Kevin (II) Oskooi, Mohammad Oztekin, Rasim Oztuna, Akil Pace, Richard (I) Pappaert, Hector Pappaert, Nelly Parent, Valérie Park, Dong-jin Park, Jee-ah Park, Jung-gi Park, Nam-min Park, Se-jin Park, Sung-hee Pashkov, Pavel Petrova, Galina (I) Peykarnegar, Kambiz Piscopo, Franco Png, Pierre Poelvoorde, Benoît Poelvoorde-Pappaert, Jacqueline Poikov, Venelin Poltavseva, N. Polyakova, Yevgeniya Poon, Ming Popescu, Valentin Portuondo, Omara Potter-Cowie, Georgia Poulavec, Gaelle Price, Delaney Proctor, Sherry Prokopenko Protopopov Pyatkov, Aleksandr Pyland, Jack Rabetsky, Kazimir Rafi, Behzad Ramallo, Fernando Randall, Emma Redd, Robin Refah, Hamida Reiss, Helge Repnikova Reynolds, John (I) Robbins, Trina Robert, Frank Rodriguez, Spain Rogozhin, Naum Roohparvari, Hasan Roomandi, Abbas-Ali Rosenblum, Bernie Ru, Liu Rujinanon, Chutcha Ryall, Ollie Ryoo, Jong-hwa Ràfols, Mingo Sae-Jin, Yook Safari, Mash-Ebrahim Safarizadeh, Faramarz Sahar, Zubaida Salimi, Haj-Ali Salter, Kyan Marie Sarabandi, Fereshte Sawadee, Dampongongtrakul Seddiqi, Bahare Segundo, Compay Sen, Bilge Sen, Sener Seo, Seung-won Seo, Won (II) Serbest, Dilek Seyfollahi, Jafar Sezer, Mete Sezer, Safak Sezer, Serif Shahidi, Mohammad-Hossein Shams, Davud Shapko, Oleg Sheridan, Noel (II) Sheriff, Brad Shestakova, Tatyana Shin, Tae-suk Shulan, Wang Simonsen, Kari Simpson, Joe (II) Slivnikov, Anatoli So, Yut Lai Soares, Joe Solomin, Yuri Sombatruksasuk, Nonlaporn Steel, Michele Stillman, Eleanor Strokov, Georgi Suh, Jung Suknovalov, Aleksei Sullivan, David (IX) Sullivan, Pat (V) Sumin, Andrei Sun, Zhimei Sunal, Kemal Suthornrat, Nittaya Szomolanyiova, Annamaria Sánchez, Jordi (I) Sánchez, Julienne Oviedo Tabor, Eron Taek-Ki, Shin Tang, Ru-Yun Tanman, Ege Tapia, Juan Tariqat, Golnaz Tasgal, Bill (I) Tavakkoli, Amir Hossein Tavier, Bertrand Tavier, Hughes Tavier, Sabine Tavier, Vincent Tekindor, Çetin Thomas (XVII) Thomson, Samantha Thongtiw, Busarn Thrasarchoti, Wasarat Tian, Zhenda Tilicheyev, Yevgeni Tobolik, Zoltan Torres, Barbarito Tosun, Erdal Travier, Marie Tseng, Hsin-Yi Tursh, Daniel Ugur, Özkan Upadhyaya, Anand Upadhyaya, Ashok Uralsky, Vladimir Valdés, Alberto 'Virgilio' Valdés, Amadito Valentin (III) Valentin (VI) Van De Waele, Willy Vanbraekel, Pierre Vandenbroeck, Willy Vanderwarren, Pol Vasilyev, V. (III) Vdovina, Natalya Velts, G. Vilches, Jordi Villa, Lázaro Vitoldi, Beatrice Voda, Viorica Volkov, Nikolai (I) Wang, Sue Yuen Wanlu, Wu Warren, Ashley Warren, Hal Wei, Minzhi Wensley, Gaynor Whitcomb, David (I) Willsie, Dave Wong, Yuet Siu Wu, Florence Wu, Nien-Jen Wu, Tian Nan Xinhong, Ming Xinmin, Fu Xuewei, Tian Yates, Simon Yebra, Eloi Yelkin, G. Yershov, Vladimir Yilmaz, Cem Yip, Wilson Young, Oh Yu, Pang Chang Yuen, Ben Yung, Wai-Ho Yusefi, Jamshid Zadeh, Pasha Shoja Zamani, Sara Zamfirescu, Florin Zarchi, Tammy Zarchi, Terry Zerenin Zhang, Huike Zhang, Yichang Zhanqing, Xu Zhiwei, Sun Zobu, Bilge Zupan, Mark d'Alcy, Jeanne de Marcos González, Juan von Lifchitz, Philbert Çorakçi, Nergis Özberk, Özge Özkul, Münir
+//        2:  11:11, Angel
+//        3:  3rd Storee
+//        4:  Abadal, Ignasi
+//        5:  Almar, Christer
+//        20210
+//
+//        cmp to ex4531
+//        V 119429
+//        E 202927
+//....
+//        4:  11:11, Angel
+//        6:  3rd Storee
+//        8:  Abadal, Ignasi
+//        10:  Almar, Christer
+//        1659
